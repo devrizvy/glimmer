@@ -7,6 +7,7 @@ export function App() {
     <Routes>
       <Route index path="/" element={<Home />} />
       <Route path="about" element={<About />} />
+        
     </Routes>
   );
 }
