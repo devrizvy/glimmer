@@ -1,7 +1,8 @@
-import { ComponentExample } from "@/components/component-example";
 
 export function App() {
-return <ComponentExample />;
+return <>
+<div className="text-red-500">Fuck you </div>
+</>
 }
 
 export default App;
