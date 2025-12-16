@@ -1,10 +1,14 @@
-const MainLayout = () => {
-  return (
-    <div className="">
-      <h1>This is MainLayout Page!</h1>
-      
-    </div>
-  );
-};
+import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar"
+import { AppSidebar } from "@/components/app-sidebar"
 
-export default MainLayout;
+export default function Layout({ children }: { children: React.ReactNode }) {
+  return (
+    <SidebarProvider>
+      <AppSidebar />
+      <main>
+        <SidebarTrigger />
+        {children}
+      </main>
+    </SidebarProvider>
+  )
+}
