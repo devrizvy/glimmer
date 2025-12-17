@@ -8,7 +8,6 @@ createRoot(document.getElementById("root")!).render(
   <BrowserRouter>
   <SidebarProvider>
     <div className="max-w-7xl mx-auto">
-
     <App />
     </div>
   </SidebarProvider>

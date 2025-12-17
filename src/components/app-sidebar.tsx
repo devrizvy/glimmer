@@ -1,4 +1,12 @@
-import { Calendar, Home, Inbox, Search, Settings } from "lucide-react"
+import { NavLink } from "react-router";
+import {
+  MessageSquare,
+  Star,
+  Users,
+  NotebookPen,
+  Sparkles,
+  Info,
+} from "lucide-react";
 
 import {
   Sidebar,
@@ -9,36 +17,16 @@ import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
-} from "@/components/ui/sidebar"
+} from "@/components/ui/sidebar";
 
-// Menu items.
 const items = [
-  {
-    title: "Home",
-    url: "#",
-    icon: Home,
-  },
-  {
-    title: "Inbox",
-    url: "#",
-    icon: Inbox,
-  },
-  {
-    title: "Calendar",
-    url: "#",
-    icon: Calendar,
-  },
-  {
-    title: "Search",
-    url: "#",
-    icon: Search,
-  },
-  {
-    title: "Settings",
-    url: "#",
-    icon: Settings,
-  },
-]
+  { label: "Home", to: "/", icon: MessageSquare },
+  { label: "Favorites", to: "favorites", icon: Star },
+  { label: "Groups", to: "groups", icon: Users },
+  { label: "AI Summary", to: "ai-summary", icon: Sparkles },
+  { label: "Notes", to: "notes", icon: NotebookPen },
+  { label: "About", to: "about", icon: Info },
+];
 
 export function AppSidebar() {
   return (
@@ -49,12 +37,17 @@ export function AppSidebar() {
           <SidebarGroupContent>
             <SidebarMenu>
               {items.map((item) => (
-                <SidebarMenuItem key={item.title}>
+                <SidebarMenuItem key={item.label}>
                   <SidebarMenuButton asChild>
-                    <a href={item.url}>
+                    <NavLink
+                      to={item.to}
+                      className={({ isActive }) =>
+                        isActive ? "font-medium" : "text-muted-foreground"
+                      }
+                    >
                       <item.icon />
-                      <span>{item.title}</span>
-                    </a>
+                      <span>{item.label}</span>
+                    </NavLink>
                   </SidebarMenuButton>
                 </SidebarMenuItem>
               ))}
@@ -63,5 +56,5 @@ export function AppSidebar() {
         </SidebarGroup>
       </SidebarContent>
     </Sidebar>
-  )
+  );
 }
