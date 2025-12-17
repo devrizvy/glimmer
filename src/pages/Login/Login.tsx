@@ -17,7 +17,7 @@ const Login: React.FC = () => {
   // Redirect if already authenticated
   useEffect(() => {
     if (isAuthenticated) {
-      navigate('/chat/chats');
+      navigate('/chat');
     }
   }, [isAuthenticated, navigate]);
 
@@ -63,7 +63,7 @@ const Login: React.FC = () => {
         // Update auth context with token
         loginWithToken(data.userInfo, data.token);
 
-        navigate('/chat/chats');
+        navigate('/chat');
       } else {
         setError(data.message || 'Login failed');
       }
@@ -77,7 +77,7 @@ const Login: React.FC = () => {
 
   return (
     <div className="min-h-screen zen-pattern chat-container flex items-center justify-center p-6">
-      <div className="w-full max-w-md">
+      <div className="w-full max-w-3xl">
         {/* Logo and title */}
         <div className="text-center mb-8">
           <div className="w-16 h-16 glass-panel rounded-2xl flex items-center justify-center mx-auto mb-4">

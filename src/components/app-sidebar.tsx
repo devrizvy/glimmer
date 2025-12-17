@@ -57,7 +57,7 @@ const navigationItems = [
     badge: null
   },
   {
-    label: "Groups",
+    label: "Classroom",
     to: "/group",
     icon: Users,
     description: "Community circles",

@@ -331,7 +331,7 @@ const ChatFeed = () => {
               </div>
             </div>
           ) : (
-            <div className="space-y-4 max-w-4xl mx-auto">
+            <div className="space-y-4 max-w-8xl mx-auto">
               {messages.map((msg) => (
                 <div
                   key={`${msg.senderEmail}-${msg.time}-${msg.id}`}
