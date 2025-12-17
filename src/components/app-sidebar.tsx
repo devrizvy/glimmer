@@ -5,7 +5,6 @@ import {
   Users,
   NotebookPen,
   Sparkles,
-  Info,
   Waves,
   Feather,
   User,
@@ -16,6 +15,8 @@ import {
   HelpCircle,
   MessageCircle,
   UserPlus,
+  BookOpen,
+  BarChart3,
 } from "lucide-react";
 
 import {
@@ -89,30 +90,30 @@ const Tools = [
 const Support = [
   {
     label: "Settings",
-    to: "/ai-summary",
+    to: "/settings",
     icon: Settings,
-    description: "Wisdom insights",
-    badge: "New"
+    description: "Customize your experience",
+    badge: null
   },
   {
     label: "Docs",
-    to: "/notes",
-    icon: NotebookPen,
-    description: "Personal reflections",
-    badge: "12"
+    to: "/docs",
+    icon: BookOpen,
+    description: "Documentation & guides",
+    badge: null
   },
   {
     label: "FAQ",
-    to: "/about",
-    icon: Info,
-    description: "The zen path",
+    to: "/faq",
+    icon: HelpCircle,
+    description: "Common questions",
     badge: null
   },
   {
     label: "Overview",
-    to: "/about",
-    icon: Info,
-    description: "The zen path",
+    to: "/overview",
+    icon: BarChart3,
+    description: "Platform analytics",
     badge: null
   },
 ];

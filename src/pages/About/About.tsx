@@ -1,4 +1,3 @@
-import React from 'react';
 import { MessageCircle, Users, BookOpen, Brain, Sparkles, Shield, Zap, Target, GraduationCap, Lightbulb, Code, Heart } from 'lucide-react';
 
 const About = () => {

@@ -348,7 +348,7 @@ const RoomChat = () => {
               <button
                 type="submit"
                 disabled={!message.trim() || !isConnected}
-                className="px-6 py-3 zen-action-btn text-primary-foreground rounded-xl font-medium disabled:opacity-50 disabled:cursor-not-allowed transition-all flex items-center gap-2"
+                className="px-6 py-3 bottom-0 zen-action-btn text-primary-foreground rounded-xl font-medium disabled:opacity-50 disabled:cursor-not-allowed transition-all flex items-center gap-2"
                 style={{
                   background: 'oklch(0.55 0.08 145)',
                   boxShadow: '0 4px 20px oklch(0.55 0.08 145 / 0.3)'

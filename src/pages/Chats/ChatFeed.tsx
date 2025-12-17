@@ -226,16 +226,25 @@ const ChatFeed = () => {
 
   if (isError) {
     return (
-      <div className="flex h-[calc(100vh-4rem)] items-center justify-center bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950">
-        <div className="text-center">
-          <h2 className="text-xl font-bold text-red-400 mb-4">Error Loading Messages</h2>
-          <p className="text-red-400/60 mb-4">{error?.message || 'Failed to load messages'}</p>
-          <button
-            onClick={() => window.location.reload()}
-            className="px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors"
-          >
-            Retry
-          </button>
+      <div className="min-h-screen zen-pattern">
+        <div className="flex h-[calc(100vh-4rem)] items-center justify-center">
+          <div className="text-center max-w-md p-8">
+            <div className="w-20 h-20 mx-auto mb-6 glass-panel rounded-2xl flex items-center justify-center">
+              <span className="text-3xl">⚠️</span>
+            </div>
+            <h2 className="zen-title text-xl mb-4">Error Loading Messages</h2>
+            <p className="text-sm text-sidebar-foreground/70 mb-6">{error?.message || 'Failed to load messages'}</p>
+            <button
+              onClick={() => window.location.reload()}
+              className="zen-action-btn px-6 py-3 text-white rounded-xl transition-all"
+              style={{
+                background: 'oklch(0.55 0.08 145)',
+                boxShadow: '0 4px 20px oklch(0.55 0.08 145 / 0.3)'
+              }}
+            >
+              Retry
+            </button>
+          </div>
         </div>
       </div>
     );
@@ -243,110 +252,123 @@ const ChatFeed = () => {
 
   if (!partnerEmail || !partnerUsername) {
     return (
-      <div className="flex h-[calc(100vh-4rem)] items-center justify-center bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950">
-        <div className="text-center text-sidebar-foreground max-w-md p-8">
-          <div className="w-16 h-16 mx-auto mb-6 bg-sidebar-accent/50 rounded-2xl flex items-center justify-center">
-            <span className="text-2xl">💬</span>
+      <div className="min-h-screen zen-pattern">
+        <div className="flex h-[calc(100vh-4rem)] items-center justify-center">
+          <div className="text-center text-sidebar-foreground max-w-md p-8">
+            <div className="w-20 h-20 mx-auto mb-6 glass-panel rounded-2xl flex items-center justify-center zen-float">
+              <span className="text-3xl">💬</span>
+            </div>
+            <h2 className="zen-title text-xl mb-4">No chat selected</h2>
+            <p className="text-sm text-sidebar-foreground/70 mb-6">Select a user to start messaging</p>
+            <button
+              onClick={() => navigate('/chat')}
+              className="zen-action-btn px-6 py-3 text-white rounded-xl transition-all"
+              style={{
+                background: 'oklch(0.55 0.08 145)',
+                boxShadow: '0 4px 20px oklch(0.55 0.08 145 / 0.3)'
+              }}
+            >
+              Go to Messages
+            </button>
           </div>
-          <h1 className="text-xl font-bold mb-2">No chat selected</h1>
-          <p className="text-sm text-sidebar-foreground/60 mb-4">Select a user to start messaging</p>
-          <button
-            onClick={() => navigate('/chat')}
-            className="px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors"
-          >
-            Go to Messages
-          </button>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="flex h-[calc(100vh-4rem)] bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950">
-      <div className="flex-1 flex flex-col">
-        {/* Header */}
-        <div className="p-4 bg-slate-900/50 backdrop-blur-xl border-b border-sidebar-border/50">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <button
-                onClick={() => navigate('/chat')}
-                className="p-2 text-sidebar-foreground/60 hover:text-sidebar-foreground hover:bg-sidebar-accent/20 rounded-lg transition-all md:hidden"
-              >
-                <ArrowLeft size={20} />
-              </button>
+    <div className="min-h-screen zen-pattern">
+      <div className="flex-1 flex flex-col h-[calc(100vh-4rem)]">
+          {/* Header */}
+          <div className="p-4 glass-panel border-b border-sidebar-border/50 rounded-b-2xl">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <button
+                  onClick={() => navigate('/chat')}
+                  className="p-3 text-sidebar-foreground/60 hover:text-sidebar-foreground hover:bg-sidebar-accent/30 rounded-xl transition-all md:hidden"
+                >
+                  <ArrowLeft size={20} />
+                </button>
 
-              <div className="relative">
-                <div className="w-10 h-10 rounded-full bg-gradient-to-br from-primary/20 to-accent/20 flex items-center justify-center border-2 border-sidebar-border">
-                  <span className="text-sm font-semibold text-primary">
-                    {partnerUsername.charAt(0).toUpperCase()}
-                  </span>
+                <div className="relative">
+                  <div className="w-12 h-12 rounded-full glass-panel flex items-center justify-center border-2 border-sidebar-border">
+                    <span className="text-sm font-semibold" style={{ color: 'oklch(0.55 0.08 145)' }}>
+                      {partnerUsername.charAt(0).toUpperCase()}
+                    </span>
+                  </div>
+                  <div className="absolute bottom-0 right-0 w-3 h-3 bg-green-400 rounded-full border-2 border-sidebar animate-pulse"></div>
                 </div>
-                <div className="absolute -bottom-0 -right-0 w-3 h-3 bg-green-400 rounded-full border-2 border-slate-900"></div>
+
+                <div>
+                  <h3 className="font-semibold text-sidebar-foreground">{partnerUsername}</h3>
+                  <p className="text-xs text-sidebar-foreground/60">
+                    {isTyping ? "typing..." : isConnected ? "Active now" : "Connecting..."}
+                  </p>
+                </div>
               </div>
 
-              <div>
-                <h3 className="font-semibold text-sidebar-foreground">{partnerUsername}</h3>
-                <p className="text-xs text-sidebar-foreground/60">
-                  {isTyping ? "typing..." : isConnected ? "Active now" : "Connecting..."}
-                </p>
+              <div className="flex items-center gap-2">
+                <div className={`w-2 h-2 rounded-full ${isConnected ? 'bg-green-400' : 'bg-red-400'}`}></div>
+                <button className="p-3 text-sidebar-foreground/60 hover:text-sidebar-foreground hover:bg-sidebar-accent/30 rounded-xl transition-all">
+                  <Phone className="w-4 h-4" />
+                </button>
+                <button className="p-3 text-sidebar-foreground/60 hover:text-sidebar-foreground hover:bg-sidebar-accent/30 rounded-xl transition-all">
+                  <Video className="w-4 h-4" />
+                </button>
+                <button className="p-3 text-sidebar-foreground/60 hover:text-sidebar-foreground hover:bg-sidebar-accent/30 rounded-xl transition-all">
+                  <MoreVertical className="w-4 h-4" />
+                </button>
               </div>
-            </div>
-
-            <div className="flex items-center gap-2">
-              <div className={`w-2 h-2 rounded-full ${isConnected ? 'bg-green-400' : 'bg-red-400'}`}></div>
-              <button className="p-2 text-sidebar-foreground/60 hover:text-sidebar-foreground hover:bg-sidebar-accent/20 rounded-lg transition-all">
-                <Phone className="w-4 h-4" />
-              </button>
-              <button className="p-2 text-sidebar-foreground/60 hover:text-sidebar-foreground hover:bg-sidebar-accent/20 rounded-lg transition-all">
-                <Video className="w-4 h-4" />
-              </button>
-              <button className="p-2 text-sidebar-foreground/60 hover:text-sidebar-foreground hover:bg-sidebar-accent/20 rounded-lg transition-all">
-                <MoreVertical className="w-4 h-4" />
-              </button>
             </div>
           </div>
-        </div>
 
         {/* Messages Area */}
-        <div className="flex-1 overflow-y-auto p-4">
+        <div className="flex-1 overflow-y-auto p-6">
           {isPending ? (
             <div className="flex items-center justify-center h-full">
               <div className="text-center">
-                <div className="w-8 h-8 border-2 border-primary/30 border-t-primary rounded-full animate-spin mx-auto mb-4"></div>
-                <p className="text-primary/60">Loading conversation...</p>
+                <div className="w-12 h-12 glass-panel rounded-2xl flex items-center justify-center mx-auto mb-6">
+                  <div className="w-6 h-6 border-2 border-primary/30 border-t-primary rounded-full animate-spin"
+                       style={{ borderTopColor: 'oklch(0.55 0.08 145)' }}></div>
+                </div>
+                <h3 className="zen-title text-lg mb-2">Loading conversation...</h3>
+                <p className="text-sm text-sidebar-foreground/70">Please wait while we load your messages</p>
               </div>
             </div>
           ) : messages.length === 0 ? (
             <div className="flex items-center justify-center h-full">
               <div className="text-center p-8 max-w-md">
-                <div className="w-16 h-16 mx-auto mb-4 bg-sidebar-accent/50 rounded-2xl flex items-center justify-center">
-                  <span className="text-2xl">👋</span>
+                <div className="w-20 h-20 mx-auto mb-6 glass-panel rounded-2xl flex items-center justify-center zen-float">
+                  <span className="text-3xl">👋</span>
                 </div>
-                <h3 className="text-lg font-semibold text-sidebar-foreground mb-2">
+                <h3 className="zen-title text-xl mb-4">
                   Start a conversation
                 </h3>
-                <p className="text-sm text-sidebar-foreground/60">
+                <p className="text-sm text-sidebar-foreground/70 leading-relaxed">
                   Send your first message to {partnerUsername}
                 </p>
               </div>
             </div>
           ) : (
-            <div className="space-y-4 max-w-8xl mx-auto">
-              {messages.map((msg) => (
+            <div className="space-y-4 max-w-6xl mx-auto">
+              {messages.map((msg, index) => (
                 <div
                   key={`${msg.senderEmail}-${msg.time}-${msg.id}`}
-                  className={`flex ${msg.isOwn ? 'justify-end' : 'justify-start'}`}
+                  className={`flex ${msg.isOwn ? 'justify-end' : 'justify-start'} animate-fadeIn`}
+                  style={{ animationDelay: `${index * 100}ms` }}
                 >
-                  <div
-                    className={`max-w-xs lg:max-w-md px-4 py-3 rounded-2xl ${
-                      msg.isOwn
-                        ? "bg-gradient-to-r from-primary to-accent text-primary-foreground rounded-br-none"
-                        : "bg-sidebar-accent text-sidebar-foreground rounded-bl-none border border-sidebar-border/50"
-                    }`}
-                  >
+                  <div className={`max-w-xs lg:max-w-md px-5 py-3 rounded-2xl ${
+                    msg.isOwn
+                      ? "text-white rounded-br-none"
+                      : "glass-panel rounded-bl-none border border-sidebar-border/50"
+                  }`}
+                  style={msg.isOwn ? {
+                    background: 'oklch(0.55 0.08 145)',
+                    boxShadow: '0 4px 20px oklch(0.55 0.08 145 / 0.3)'
+                  } : {}}>
                     <p className="text-sm leading-relaxed">{msg.message}</p>
-                    <p className={`text-xs mt-1 ${
-                      msg.isOwn ? 'text-primary-foreground/70' : 'text-sidebar-foreground/50'
+                    <p className={`text-xs mt-2 ${
+                      msg.isOwn ? 'text-white/70' : 'text-sidebar-foreground/50'
                     }`}>
                       {msg.time}
                     </p>
@@ -355,11 +377,14 @@ const ChatFeed = () => {
               ))}
               {isTyping && (
                 <div className="flex justify-start">
-                  <div className="bg-sidebar-accent text-sidebar-foreground rounded-2xl rounded-bl-none px-4 py-3 max-w-xs border border-sidebar-border/50">
+                  <div className="glass-panel rounded-2xl rounded-bl-none px-5 py-3 max-w-xs border border-sidebar-border/50">
                     <div className="flex space-x-1">
-                      <div className="w-2 h-2 bg-sidebar-foreground/40 rounded-full animate-bounce"></div>
-                      <div className="w-2 h-2 bg-sidebar-foreground/40 rounded-full animate-bounce" style={{ animationDelay: '0.1s' }}></div>
-                      <div className="w-2 h-2 bg-sidebar-foreground/40 rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></div>
+                      <div className="w-2 h-2 rounded-full animate-bounce"
+                           style={{ backgroundColor: 'oklch(0.55 0.08 145)' }}></div>
+                      <div className="w-2 h-2 rounded-full animate-bounce"
+                           style={{ backgroundColor: 'oklch(0.55 0.08 145)', animationDelay: '0.1s' }}></div>
+                      <div className="w-2 h-2 rounded-full animate-bounce"
+                           style={{ backgroundColor: 'oklch(0.55 0.08 145)', animationDelay: '0.2s' }}></div>
                     </div>
                   </div>
                 </div>
@@ -370,10 +395,10 @@ const ChatFeed = () => {
         </div>
 
         {/* Message Input */}
-        <div className="p-4 bg-slate-900/50 backdrop-blur-xl border-t border-sidebar-border/50">
-          <div className="flex items-center gap-2 mb-2">
+        <div className="p-4 glass-panel border-t border-sidebar-border/50 rounded-t-2xl">
+          <div className="flex items-center gap-3 mb-4">
             <div className={`w-2 h-2 rounded-full ${isConnected ? 'bg-green-400' : 'bg-red-400'}`}></div>
-            <span className="text-xs text-sidebar-foreground/60">
+            <span className="text-xs text-sidebar-foreground/60 font-medium">
               {isConnected ? 'Connected' : 'Connecting...'}
             </span>
           </div>
@@ -387,14 +412,17 @@ const ChatFeed = () => {
                 handleTyping();
               }}
               placeholder={`Message ${partnerUsername}...`}
-              className="flex-1 px-4 py-3 bg-sidebar-accent/50 border border-sidebar-border rounded-xl text-sidebar-foreground placeholder-sidebar-foreground/40 focus:outline-none focus:border-primary focus:shadow-lg focus:shadow-primary/10 transition-all"
+              className="zen-search flex-1 px-4 py-3 text-sidebar-foreground placeholder-sidebar-foreground/40"
             />
             <button
               type="submit"
               disabled={currentMessage.trim() === "" || !isConnected}
-              className="px-6 py-3 bg-gradient-to-r from-primary to-accent text-primary-foreground rounded-xl hover:from-primary/90 hover:to-accent/90 disabled:opacity-50 disabled:cursor-not-allowed transition-all flex items-center gap-2"
+              className="zen-action-btn px-6 py-3 text-white rounded-xl disabled:opacity-50 disabled:cursor-not-allowed transition-all flex items-center gap-2"
+              style={{
+                background: currentMessage.trim() && isConnected ? 'oklch(0.55 0.08 145)' : 'oklch(0.55 0.08 145 / 0.3)',
+                boxShadow: currentMessage.trim() && isConnected ? '0 4px 20px oklch(0.55 0.08 145 / 0.3)' : 'none'
+              }}
             >
-              <span>Send</span>
               <Send size={16} />
             </button>
           </form>
