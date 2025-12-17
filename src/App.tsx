@@ -11,12 +11,12 @@ export function App() {
   return (
     <Routes>
       <Route index element={<Home />} />
+        <Route path="/about" element={<About />} />
       <Route path="/chat" element={<Layout />}>
         <Route path="favorites" element={<Favorites />} />
         <Route path="groups" element={<Group />} />
         <Route path="notes" element={<Notes />} />
         <Route path="ai-summary" element={<AISummary />} />
-        <Route path="about" element={<About />} />
       </Route>
     </Routes>
   );
