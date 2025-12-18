@@ -4,6 +4,9 @@ import { useNavigate, useParams } from "react-router-dom";
 import { useLocation } from "react-router-dom";
 import { io } from "socket.io-client";
 import { useAuth } from "../../contexts/AuthContext";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import useRoomMessages from "../../hooks/useRoomMessages";
 
 interface RoomMessage {
 	id: string;
@@ -26,11 +29,13 @@ const RoomChat = () => {
 
 	const [socket, setSocket] = useState<any>(null);
 	const [message, setMessage] = useState("");
-	const [messages, setMessages] = useState<RoomMessage[]>([]);
 	const [onlineUsers, setOnlineUsers] = useState<string[]>([]);
 	const [isConnected, setIsConnected] = useState(false);
-	const [loading, setLoading] = useState(true);
 	const messagesEndRef = useRef<HTMLDivElement>(null);
+
+	// Use useRoomMessages hook for initial message loading
+	const { isPending, messages: initialMessages, isError, error } = useRoomMessages(id || "");
+	const [messages, setMessages] = useState<RoomMessage[]>([]);
 
 	// Get room name from location state or localStorage
 	const roomName =
@@ -122,35 +127,36 @@ const RoomChat = () => {
 		};
 	}, [id, username, roomName, isAuthenticated, navigate]);
 
-	// Load initial messages
+	// Update messages when initialMessages are loaded
 	useEffect(() => {
-		// In a real implementation, you'd fetch messages from your API here
-		// For now, we'll simulate some initial messages
-		const mockMessages: RoomMessage[] = [
-			{
-				id: "1",
+		if (initialMessages && initialMessages.length > 0) {
+			const formattedMessages: RoomMessage[] = initialMessages.map((msg: any) => ({
+				id: msg._id || Date.now().toString(),
+				roomId: msg.roomId || id || "",
+				room: msg.room || roomName,
+				author: msg.author || "Unknown",
+				message: msg.message || "",
+				time: msg.time || new Date(msg.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+				isOwn: msg.author === username,
+				isSystem: msg.author === "System",
+				createdAt: new Date(msg.createdAt),
+			}));
+			setMessages(formattedMessages);
+		} else {
+			// Add welcome message if no messages exist
+			const welcomeMessage: RoomMessage = {
+				id: Date.now().toString(),
 				roomId: id || "",
 				room: roomName,
 				author: "System",
-				message: `🚀 Welcome to the ${roomName} Neural Network`,
-				time: "10:00 AM",
+				message: `🚀 Welcome to the ${roomName} classroom`,
+				time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
 				isSystem: true,
-				createdAt: new Date(Date.now() - 3600000),
-			},
-			{
-				id: "2",
-				roomId: id || "",
-				room: roomName,
-				author: "NeuralBot",
-				message: "Initializing quantum communication protocols... ⚡",
-				time: "10:01 AM",
-				isOwn: false,
-				createdAt: new Date(Date.now() - 3000000),
-			},
-		];
-		setMessages(mockMessages);
-		setLoading(false);
-	}, [id, roomName]);
+				createdAt: new Date(),
+			};
+			setMessages([welcomeMessage]);
+		}
+	}, [initialMessages, id, roomName, username]);
 
 	const handleSendMessage = (e: React.FormEvent) => {
 		e.preventDefault();
@@ -193,12 +199,14 @@ const RoomChat = () => {
 				<div className="container mx-auto px-4 py-4">
 					<div className="flex items-center justify-between">
 						<div className="flex items-center gap-4">
-							<button
+							<Button
+								variant="ghost"
+								size="icon"
 								onClick={leaveRoom}
 								className="p-2 text-foreground/60 hover:text-foreground hover:bg-sidebar-accent/30 rounded-lg transition-colors"
 							>
 								<ArrowLeft size={24} />
-							</button>
+							</Button>
 
 							<div className="flex items-center gap-3">
 								<div className="relative">
@@ -227,15 +235,27 @@ const RoomChat = () => {
 						</div>
 
 						<div className="flex items-center gap-2">
-							<button className="p-2 text-foreground/60 hover:text-foreground hover:bg-sidebar-accent/30 rounded-lg transition-colors">
+							<Button
+								variant="ghost"
+								size="icon"
+								className="text-muted-foreground hover:text-foreground"
+							>
 								<Users className="w-5 h-5" />
-							</button>
-							<button className="p-2 text-foreground/60 hover:text-foreground hover:bg-sidebar-accent/30 rounded-lg transition-colors">
+							</Button>
+							<Button
+								variant="ghost"
+								size="icon"
+								className="text-muted-foreground hover:text-foreground"
+							>
 								<Settings className="w-5 h-5" />
-							</button>
-							<button className="p-2 text-destructive hover:text-destructive/90 hover:bg-destructive/10 rounded-lg transition-colors">
+							</Button>
+							<Button
+								variant="ghost"
+								size="icon"
+								className="text-destructive hover:text-destructive/90 hover:bg-destructive/10"
+							>
 								<LogOut className="w-5 h-5" />
-							</button>
+							</Button>
 						</div>
 					</div>
 				</div>
@@ -243,13 +263,28 @@ const RoomChat = () => {
 
 			{/* Messages Area */}
 			<div className="flex-1 overflow-y-auto p-4">
-				{loading ? (
+				{isPending ? (
 					<div className="flex items-center justify-center h-full">
 						<div className="text-center">
-							<div className="w-16 h-16 border-4 border-blue-200 border-t-blue-600 rounded-full animate-spin mx-auto"></div>
+							<div className="w-16 h-16 border-4 border-primary/30 border-t-primary rounded-full animate-spin mx-auto"></div>
 							<h1 className="text-xl font-bold text-foreground mt-4">
-								Loading classroom...
+								Loading classroom messages...
 							</h1>
+						</div>
+					</div>
+				) : isError ? (
+					<div className="flex items-center justify-center h-full">
+						<div className="text-center max-w-md">
+							<div className="w-20 h-20 mx-auto mb-6 rounded-2xl flex items-center justify-center mira-glass">
+								<span className="text-3xl">⚠️</span>
+							</div>
+							<h2 className="mira-title text-xl mb-4">Error Loading Messages</h2>
+							<p className="text-sm text-muted-foreground mb-6">
+								{error?.message || "Failed to load room messages"}
+							</p>
+							<Button onClick={() => window.location.reload()} className="px-6 py-3">
+								Try Again
+							</Button>
 						</div>
 					</div>
 				) : (
@@ -257,7 +292,7 @@ const RoomChat = () => {
 						{messages.map((msg) => (
 							<div
 								key={msg.id}
-								className={`${msg.isSystem ? "flex justify-center" : "flex gap-3 animate-fadeIn"}`}
+								className={`${msg.isSystem ? "flex justify-center" : `flex gap-3 animate-fadeIn ${msg.isOwn ? "justify-end" : "justify-start"}`}`}
 							>
 								{msg.isSystem ? (
 									<div className="px-4 py-2 bg-primary/10 border border-primary/20 rounded-full text-sm text-primary font-medium">
@@ -268,15 +303,17 @@ const RoomChat = () => {
 									</div>
 								) : (
 									<>
-										<div className="w-10 h-10 bg-primary rounded-xl flex items-center justify-center flex-shrink-0">
-											<span className="text-lg font-bold text-primary-foreground">
-												{msg.author.charAt(0).toUpperCase()}
-											</span>
-										</div>
-										<div className="flex-1">
-											<div className="flex items-baseline gap-2 mb-1">
+										{!msg.isOwn && (
+											<div className="w-10 h-10 bg-primary rounded-xl flex items-center justify-center flex-shrink-0">
+												<span className="text-lg font-bold text-primary-foreground">
+													{msg.author.charAt(0).toUpperCase()}
+												</span>
+											</div>
+										)}
+										<div className={`max-w-xs lg:max-w-md ${msg.isOwn ? "order-first" : ""}`}>
+											<div className={`flex items-baseline gap-2 mb-1 ${msg.isOwn ? "justify-end" : ""}`}>
 												<span className="font-semibold text-foreground text-sm">
-													{msg.author}
+													{msg.isOwn ? "You" : msg.author}
 												</span>
 												<span className="text-xs text-foreground/50">
 													{msg.time}
@@ -292,6 +329,13 @@ const RoomChat = () => {
 												<p className="leading-relaxed">{msg.message}</p>
 											</div>
 										</div>
+										{msg.isOwn && (
+											<div className="w-10 h-10 bg-primary rounded-xl flex items-center justify-center flex-shrink-0 order-last">
+												<span className="text-lg font-bold text-primary-foreground">
+													{msg.author.charAt(0).toUpperCase()}
+												</span>
+											</div>
+										)}
 									</>
 								)}
 							</div>
@@ -342,17 +386,17 @@ const RoomChat = () => {
 					</div>
 
 					<form onSubmit={handleSendMessage} className="flex items-end gap-3">
-						<div className="flex-1 relative">
-							<input
+						<div className="flex-1">
+							<Input
 								type="text"
 								value={message}
 								onChange={(e) => setMessage(e.target.value)}
 								placeholder={`Type your message in ${roomName} classroom...`}
-								className="w-full px-4 py-3 mira-search rounded-xl text-foreground placeholder-sidebar-foreground/40 focus:outline-none transition-all"
+								className="mira-search"
 							/>
 						</div>
 
-						<button
+						<Button
 							type="submit"
 							disabled={!message.trim() || !isConnected}
 							className="px-6 py-3 bottom-0 mira-action-btn text-primary-foreground rounded-xl font-medium disabled:opacity-50 disabled:cursor-not-allowed transition-all flex items-center gap-2"
@@ -363,7 +407,7 @@ const RoomChat = () => {
 						>
 							<Send size={18} />
 							<span>Send</span>
-						</button>
+						</Button>
 					</form>
 				</div>
 			</div>

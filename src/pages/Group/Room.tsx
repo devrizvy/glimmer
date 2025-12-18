@@ -4,6 +4,8 @@ import { useNavigate } from "react-router-dom";
 import { io } from "socket.io-client";
 import { LogOut, Copy, ArrowRight, Users, Plus } from "lucide-react";
 import { useAuth } from "../../contexts/AuthContext";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 
 const socket = io(`${import.meta.env.VITE_BACKEND_URL}`);
 
@@ -218,13 +220,15 @@ const Room = () => {
 									</h2>
 									<div className="flex items-center justify-center text-xs sm:text-sm text-foreground/60">
 										<span>Class ID: {currentRoom.id}</span>
-										<button
-											onClick={copyRoomId}
-											className="ml-2 text-primary hover:text-primary/90 transition-colors p-1 rounded"
-											title="Copy Class ID"
-										>
-											<Copy size={12} className="sm:w-3.5 sm:h-3.5" />
-										</button>
+										<Button
+										variant="ghost"
+										size="icon"
+										onClick={copyRoomId}
+										className="ml-2 text-primary hover:text-primary/90 transition-colors p-1 rounded"
+										title="Copy Class ID"
+									>
+										<Copy size={12} className="sm:w-3.5 sm:h-3.5" />
+									</Button>
 									</div>
 								</div>
 
@@ -256,7 +260,7 @@ const Room = () => {
 							</div>
 
 							<div className="flex flex-col sm:flex-row gap-3 mb-4 sm:mb-6">
-								<button
+								<Button
 									onClick={continueToChat}
 									className="flex-1 mira-action-btn text-primary-foreground p-3 sm:p-4 rounded-xl transition-all flex items-center justify-center gap-2 text-sm sm:text-base"
 									style={{
@@ -266,16 +270,17 @@ const Room = () => {
 								>
 									Enter Classroom{" "}
 									<ArrowRight size={16} className="sm:w-4 sm:h-4" />
-								</button>
+								</Button>
 
-								<button
+								<Button
 									onClick={leaveRoom}
-									className="bg-destructive text-destructive-foreground p-3 sm:p-4 rounded-lg hover:opacity-90 transition-colors flex items-center justify-center sm:w-auto"
+									variant="destructive"
+									className="p-3 sm:p-4 rounded-lg hover:opacity-90 transition-colors flex items-center justify-center sm:w-auto"
 									title="Leave Classroom"
 								>
 									<LogOut size={16} className="sm:w-4 sm:h-4" />
 									<span className="ml-2 sm:hidden">Leave</span>
-								</button>
+								</Button>
 							</div>
 
 							<div className="border-t border-sidebar-border pt-4 sm:pt-6 mt-2">
@@ -283,25 +288,25 @@ const Room = () => {
 									Join Another Classroom
 								</h3>
 								<div className="space-y-4">
-									<input
+									<Input
 										onChange={(event) => setRoomName(event.target.value)}
 										type="text"
 										placeholder="Classroom Name"
-										className="w-full p-3 sm:p-4 mira-search rounded-xl text-foreground placeholder-sidebar-foreground/40 focus:outline-none transition-all text-sm sm:text-base"
+										className="mira-search"
 									/>
-									<input
+									<Input
 										onChange={(event) => setRoomId(event.target.value)}
 										type="text"
 										placeholder="Class ID"
-										className="w-full p-3 sm:p-4 mira-search rounded-xl text-foreground placeholder-sidebar-foreground/40 focus:outline-none transition-all text-sm sm:text-base"
+										className="mira-search"
 									/>
-									<button
+									<Button
 										onClick={joinTheRoom}
 										disabled={loading}
-										className="w-full mira-action-btn text-primary-foreground p-3 sm:p-4 rounded-lg hover:opacity-90 disabled:opacity-50 disabled:cursor-not-allowed transition-colors text-sm sm:text-base"
+										className="w-full"
 									>
 										{loading ? "Joining..." : "Join Classroom"}
-									</button>
+								</Button>
 								</div>
 							</div>
 						</>
@@ -310,26 +315,20 @@ const Room = () => {
 						<>
 							{/* Toggle between Join and Create */}
 							<div className="flex mb-6 sm:mb-8 p-1 bg-sidebar-accent/30 rounded-lg">
-								<button
+								<Button
 									onClick={() => setIsCreating(false)}
-									className={`flex-1 py-3 rounded-md transition text-xs sm:text-sm font-medium ${
-										!isCreating
-											? "mira-action-btn text-primary-foreground"
-											: "text-foreground/60 hover:text-foreground"
-									}`}
+									variant={!isCreating ? "default" : "ghost"}
+									className={`flex-1 ${!isCreating ? "" : "text-foreground/60 hover:text-foreground"}`}
 								>
 									Join Classroom
-								</button>
-								<button
+								</Button>
+								<Button
 									onClick={() => setIsCreating(true)}
-									className={`flex-1 py-3 rounded-md transition text-xs sm:text-sm font-medium ${
-										isCreating
-											? "mira-action-btn text-primary-foreground"
-											: "text-foreground/60 hover:text-foreground"
-									}`}
+									variant={isCreating ? "default" : "ghost"}
+									className={`flex-1 ${isCreating ? "" : "text-foreground/60 hover:text-foreground"}`}
 								>
 									Create Classroom
-								</button>
+								</Button>
 							</div>
 
 							<h1 className="text-2xl sm:text-3xl font-bold text-center mb-6 sm:mb-8 text-foreground">
@@ -337,34 +336,24 @@ const Room = () => {
 							</h1>
 
 							<div className="space-y-4">
-								<input
+								<Input
 									value={roomName}
 									onChange={(event) => setRoomName(event.target.value)}
 									type="text"
 									maxLength={14}
 									placeholder="Classroom Name"
-									className="w-full p-3 sm:p-4 mira-search rounded-xl text-foreground placeholder-sidebar-foreground/40 focus:outline-none transition-all text-sm sm:text-base"
+									className="mira-search"
 								/>
 
-								{isCreating ? (
-									<input
-										value={roomId}
-										onChange={(event) => setRoomId(event.target.value)}
-										type="text"
-										placeholder="Class ID (optional - will be generated if empty)"
-										className="w-full p-3 sm:p-4 mira-search rounded-xl text-foreground placeholder-sidebar-foreground/40 focus:outline-none transition-all text-sm sm:text-base"
-									/>
-								) : (
-									<input
-										value={roomId}
-										onChange={(event) => setRoomId(event.target.value)}
-										type="text"
-										placeholder="Class ID"
-										className="w-full p-3 sm:p-4 mira-search rounded-xl text-foreground placeholder-sidebar-foreground/40 focus:outline-none transition-all text-sm sm:text-base"
-									/>
-								)}
+	<Input
+									value={roomId}
+									onChange={(event) => setRoomId(event.target.value)}
+									type="text"
+									placeholder={isCreating ? "Class ID (optional - will be generated if empty)" : "Class ID"}
+									className="mira-search"
+								/>
 
-								<button
+								<Button
 									onClick={isCreating ? createNewRoom : joinTheRoom}
 									disabled={loading}
 									className="w-full mira-action-btn text-primary-foreground p-3 sm:p-4 rounded-lg hover:opacity-90 disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center justify-center gap-2 text-sm sm:text-base"
@@ -379,7 +368,7 @@ const Room = () => {
 									) : (
 										"Join Classroom"
 									)}
-								</button>
+								</Button>
 
 								{/* Recent Rooms */}
 								{recentRooms.length > 0 && (
@@ -389,7 +378,7 @@ const Room = () => {
 										</h3>
 										<div className="space-y-3">
 											{recentRooms.map((room, idx) => (
-												<button
+												<Button
 													key={idx}
 													onClick={() => joinExistingRoom(room)}
 													className="w-full flex items-center justify-between bg-sidebar-accent/20 hover:bg-sidebar-accent/30 text-foreground p-3 sm:p-4 rounded-lg border border-sidebar-border transition-colors"
@@ -406,7 +395,7 @@ const Room = () => {
 														size={16}
 														className="sm:w-4 sm:h-4 flex-shrink-0 ml-3 text-foreground/60"
 													/>
-												</button>
+												</Button>
 											))}
 										</div>
 									</div>
