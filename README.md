@@ -1,4 +1,4 @@
-# 🌊 zenWhisper
+# zenWhisper
 
 <div align="center">
 
@@ -12,7 +12,7 @@
 ║   ███████╗███████╗██║ ╚████║╚███╔███╔╝██║  ██║██║███████║██║     ███████╗██║  ██║║
 ║   ╚══════╝╚══════╝╚═╝  ╚═══╝ ╚══╝╚══╝ ╚═╝  ╚═╝╚═╝╚══════╝╚═╝     ╚══════╝╚═╝  ╚═╝║
 ║                                                           ║
-║              🎓 Collaborative Study Platform              ║
+║                Collaborative Study Platform               ║
 ║           "In the stillness of mind, wisdom whispers"    ║
 ║                                                           ║
 ╚═══════════════════════════════════════════════════════════╝
@@ -23,43 +23,43 @@
 [![Socket.IO](https://img.shields.io/badge/Socket.IO-4.8.1-010101?style=for-the-badge&logo=socket.io&logoColor=white)](https://socket.io/)
 [![TailwindCSS](https://img.shields.io/badge/Tailwind-4.1.17-38B2AC?style=for-the-badge&logo=tailwind-css&logoColor=white)](https://tailwindcss.com/)
 
-[🚀 Live Demo](https://zenwhisper.com) • [📖 Documentation](#documentation) • [🐛 Report Bug](https://github.com/yourusername/zenwhisper/issues) • [✨ Request Feature](https://github.com/yourusername/zenwhisper/issues)
+[Live Demo](https://zenwhisper.com) • [Documentation](#documentation) • [Report Bug](https://github.com/devrizvy/zenwhisper/issues) • [Request Feature](https://github.com/devrizvy/zenwhisper/issues)
 
 </div>
 
 ---
 
-## 🌟 About The Project
+## About The Project
 
 **zenWhisper** is a modern, real-time collaborative study platform designed specifically for students who want to learn together. Built with a calming "zen" aesthetic, it provides a distraction-free environment where students can connect, share knowledge, and enhance their learning experience.
 
-### 🎯 Purpose
+### Purpose
 
 In today's digital learning landscape, students need more than just chat apps—they need **focused study environments**. zenWhisper bridges the gap by offering:
 
-- 💬 **Real-time Messaging** - Connect instantly with study partners
-- 🏫 **Virtual Classrooms** - Create dedicated group study spaces
-- 📝 **Smart Notes** - Take and organize notes collaboratively
-- 🤖 **AI Summaries** - Transform lengthy PDFs into concise study materials
-- 🎓 **Collaborative Learning** - Study together, succeed together
+- **Real-time Messaging** - Connect instantly with study partners
+- **Virtual Classrooms** - Create dedicated group study spaces
+- **Smart Notes** - Take and organize notes collaboratively
+- **AI Summaries** - Transform lengthy PDFs into concise study materials
+- **Collaborative Learning** - Study together, succeed together
 
 ---
 
-## ✨ Features
+## Features
 
-### 🔥 Core Features
+### Core Features
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
 │                                                             │
-│  📱 Private Chats        │  🏫 Virtual Classrooms          │
+│  Private Chats           │  Virtual Classrooms             │
 │  ─────────────────────  │  ────────────────────────        │
 │  • One-on-one messaging  │  • Group study rooms            │
 │  • Typing indicators     │  • Real-time collaboration      │
 │  • Online status         │  • Member management            │
 │  • Message history       │  • Room-wide announcements      │
 │                          │                                  │
-│  📝 Smart Notes          │  🤖 AI Summaries                │
+│  Smart Notes             │  AI Summaries                   │
 │  ─────────────────────  │  ────────────────────────        │
 │  • Rich text editor      │  • PDF summarization            │
 │  • Auto-save             │  • Note condensation            │
@@ -69,7 +69,7 @@ In today's digital learning landscape, students need more than just chat apps—
 └─────────────────────────────────────────────────────────────┘
 ```
 
-### 🎨 User Experience
+### User Experience
 
 - **Zen Aesthetic**: Calming teal/green color palette designed for focus
 - **Glass Morphism**: Modern, elegant UI with smooth animations
@@ -77,7 +77,7 @@ In today's digital learning landscape, students need more than just chat apps—
 - **Dark Mode**: Easy on the eyes during late-night study sessions
 - **Keyboard Shortcuts**: Navigate efficiently without breaking flow
 
-### 🔐 Security & Privacy
+### Security & Privacy
 
 - End-to-end encrypted messaging
 - JWT-based authentication
@@ -87,7 +87,7 @@ In today's digital learning landscape, students need more than just chat apps—
 
 ---
 
-## 🚀 Getting Started
+## Getting Started
 
 ### Prerequisites
 
@@ -100,20 +100,20 @@ npm >= 9.0.0
 
 ### Installation
 
-1️⃣ **Clone the repository**
+**1. Clone the repository**
 
 ```bash
-git clone https://github.com/yourusername/zenwhisper.git
+git clone https://github.com/devrizvy/zenwhisper.git
 cd zenwhisper
 ```
 
-2️⃣ **Install dependencies**
+**2. Install dependencies**
 
 ```bash
 npm install
 ```
 
-3️⃣ **Configure environment variables**
+**3. Configure environment variables**
 
 Create a `.env` file in the root directory:
 
@@ -121,38 +121,38 @@ Create a `.env` file in the root directory:
 VITE_BACKEND_URL=http://localhost:5000
 ```
 
-4️⃣ **Start the development server**
+**4. Start the development server**
 
 ```bash
 npm run dev
 ```
 
-5️⃣ **Open your browser**
+**5. Open your browser**
 
-Navigate to `http://localhost:5173` and start exploring! 🎉
+Navigate to `http://localhost:5173` and start exploring!
 
 ---
 
-## 🛠️ Tech Stack
+## Tech Stack
 
 ### Frontend
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
 │                                                             │
-│  🎨 UI/UX                                                   │
+│  UI/UX                                                      │
 │  ├─ React 19.2.0         - UI Framework                    │
 │  ├─ TypeScript 5.9.3     - Type Safety                     │
 │  ├─ Tailwind CSS 4.1.17  - Styling                         │
 │  ├─ shadcn/ui            - Component Library               │
 │  └─ Lucide React         - Icon System                     │
 │                                                             │
-│  🔄 State Management                                        │
+│  State Management                                           │
 │  ├─ TanStack Query       - Server State                    │
 │  ├─ Context API          - Global State                    │
 │  └─ React Router 7       - Navigation                      │
 │                                                             │
-│  🌐 Communication                                           │
+│  Communication                                              │
 │  ├─ Socket.IO Client     - Real-time Events                │
 │  ├─ Axios                - HTTP Requests                   │
 │  └─ React Hot Toast      - Notifications                   │
@@ -170,60 +170,60 @@ Navigate to `http://localhost:5173` and start exploring! 🎉
 
 ---
 
-## 📂 Project Structure
+## Project Structure
 
 ```
 zenwhisper/
 │
-├── 📁 src/
-│   ├── 📁 components/
-│   │   ├── 📁 ui/                    # Reusable UI components
-│   │   └── app-sidebar.tsx           # Navigation sidebar
+├── src/
+│   ├── components/
+│   │   ├── ui/                    # Reusable UI components
+│   │   └── app-sidebar.tsx        # Navigation sidebar
 │   │
-│   ├── 📁 pages/
-│   │   ├── 📁 Chats/                 # Private messaging
+│   ├── pages/
+│   │   ├── Chats/                 # Private messaging
 │   │   │   ├── ChatList.tsx
 │   │   │   ├── ChatFeed.tsx
 │   │   │   └── UsersList.tsx
-│   │   ├── 📁 Group/                 # Virtual classrooms
+│   │   ├── Group/                 # Virtual classrooms
 │   │   │   ├── Room.tsx
 │   │   │   └── RoomChat.tsx
-│   │   ├── 📁 Notes/                 # Note-taking system
-│   │   ├── 📁 AISummary/             # AI summarization
-│   │   ├── 📁 Settings/              # User preferences
+│   │   ├── Notes/                 # Note-taking system
+│   │   ├── AISummary/             # AI summarization
+│   │   ├── Settings/              # User preferences
 │   │   └── ...
 │   │
-│   ├── 📁 contexts/
-│   │   └── AuthContext.tsx           # Authentication state
+│   ├── contexts/
+│   │   └── AuthContext.tsx        # Authentication state
 │   │
-│   ├── 📁 hooks/
-│   │   ├── usePrivateMessages.tsx    # Private chat logic
-│   │   ├── useRoomMessages.tsx       # Room chat logic
-│   │   ├── useSocketChat.ts          # WebSocket management
-│   │   └── useUsers.tsx              # User data fetching
+│   ├── hooks/
+│   │   ├── usePrivateMessages.tsx # Private chat logic
+│   │   ├── useRoomMessages.tsx    # Room chat logic
+│   │   ├── useSocketChat.ts       # WebSocket management
+│   │   └── useUsers.tsx           # User data fetching
 │   │
-│   ├── 📁 services/
-│   │   ├── axios.ts                  # HTTP client
-│   │   ├── apiService.ts             # REST API methods
-│   │   └── socketService.ts          # WebSocket service
+│   ├── services/
+│   │   ├── axios.ts               # HTTP client
+│   │   ├── apiService.ts          # REST API methods
+│   │   └── socketService.ts       # WebSocket service
 │   │
-│   ├── 📁 Layout/
-│   │   └── MainLayout.tsx            # App shell
+│   ├── Layout/
+│   │   └── MainLayout.tsx         # App shell
 │   │
-│   └── 📄 index.css                  # Global styles + Zen theme
+│   └── index.css                  # Global styles + Zen theme
 │
-├── 📄 .env                            # Environment variables
-├── 📄 package.json                    # Dependencies
-├── 📄 vite.config.ts                  # Vite configuration
-├── 📄 tailwind.config.js              # Tailwind configuration
-└── 📄 README.md                       # You are here!
+├── .env                            # Environment variables
+├── package.json                    # Dependencies
+├── vite.config.ts                  # Vite configuration
+├── tailwind.config.js              # Tailwind configuration
+└── README.md                       # You are here
 ```
 
 ---
 
-## 💡 Usage Examples
+## Usage Examples
 
-### 1️⃣ Starting a Private Chat
+### 1. Starting a Private Chat
 
 ```typescript
 // Navigate to the chat page
@@ -241,7 +241,7 @@ sendPrivateMessage({
 });
 ```
 
-### 2️⃣ Creating a Virtual Classroom
+### 2. Creating a Virtual Classroom
 
 ```typescript
 // Create a new classroom
@@ -262,7 +262,7 @@ sendRoomMessage({
 });
 ```
 
-### 3️⃣ Using AI Summary (Coming Soon)
+### 3. Using AI Summary (Coming Soon)
 
 ```typescript
 // Upload a PDF
@@ -277,7 +277,7 @@ saveToNotes(summary);
 
 ---
 
-## 🎨 Design System
+## Design System
 
 ### Color Palette
 
@@ -334,9 +334,9 @@ font-family: 'JetBrains Mono Variable', monospace;
 
 ---
 
-## 🗺️ Roadmap
+## Roadmap
 
-### Phase 1: Core Features ✅
+### Phase 1: Core Features (Completed)
 - [x] User authentication
 - [x] Private messaging
 - [x] Virtual classrooms
@@ -344,7 +344,7 @@ font-family: 'JetBrains Mono Variable', monospace;
 - [x] Typing indicators
 - [x] Online status
 
-### Phase 2: Enhanced Features 🚧
+### Phase 2: Enhanced Features (In Progress)
 - [ ] Rich text notes editor
 - [ ] AI PDF summarization
 - [ ] File sharing in chats
@@ -352,7 +352,7 @@ font-family: 'JetBrains Mono Variable', monospace;
 - [ ] Screen sharing
 - [ ] Calendar integration
 
-### Phase 3: Advanced Features 📋
+### Phase 3: Advanced Features (Planned)
 - [ ] Study schedules & reminders
 - [ ] Pomodoro timer integration
 - [ ] Flashcard creation
@@ -360,7 +360,7 @@ font-family: 'JetBrains Mono Variable', monospace;
 - [ ] Study analytics dashboard
 - [ ] Mobile app (React Native)
 
-### Phase 4: Community Features 🌐
+### Phase 4: Community Features (Future)
 - [ ] Public study groups
 - [ ] Study partner matching
 - [ ] Resource marketplace
@@ -370,7 +370,7 @@ font-family: 'JetBrains Mono Variable', monospace;
 
 ---
 
-## 🤝 Contributing
+## Contributing
 
 Contributions make the open-source community an amazing place to learn, inspire, and create! Any contributions you make are **greatly appreciated**.
 
@@ -403,22 +403,22 @@ Contributions make the open-source community an amazing place to learn, inspire,
 
 ---
 
-## 📄 License
+## License
 
 Distributed under the MIT License. See `LICENSE` for more information.
 
 ---
 
-## 👨‍💻 Developer
+## Developer
 
 **Your Name**
-- GitHub: [@yourusername](https://github.com/yourusername)
-- LinkedIn: [Your LinkedIn](https://linkedin.com/in/yourprofile)
-- Email: your.email@example.com
+- GitHub: [@devrizvy](https://github.com/devrizvy)
+- LinkedIn: [devrizvy](https://linkedin.com/in/devrizvy)
+- Email: rizvyhq1@gmail.com
 
 ---
 
-## 🙏 Acknowledgments
+## Acknowledgments
 
 Special thanks to:
 
@@ -431,15 +431,14 @@ Special thanks to:
 
 ---
 
-## 💖 Support
+## Support
 
 If you found this project helpful, please consider:
 
-- ⭐ **Starring** the repository
-- 🐛 **Reporting** bugs and issues
-- 💡 **Suggesting** new features
-- 📢 **Sharing** with fellow students
-- ☕ **Buying me a coffee** (if you're feeling generous!)
+- **Starring** the repository
+- **Reporting** bugs and issues
+- **Suggesting** new features
+- **Sharing** with fellow students
 
 ---
 
@@ -448,17 +447,17 @@ If you found this project helpful, please consider:
 ```
 ┌─────────────────────────────────────────────────────────────┐
 │                                                             │
-│              Made with ❤️ and lots of ☕                     │
+│              Made with care and dedication                  │
 │                                                             │
 │         "In the stillness of mind, wisdom whispers"         │
 │                                                             │
-│                    🌊 zenWhisper © 2024                     │
+│                    zenWhisper © 2024                        │
 │                                                             │
 └─────────────────────────────────────────────────────────────┘
 ```
 
-⭐ **Star us on GitHub** — it motivates us to keep improving!
+**Star us on GitHub** — it motivates us to keep improving!
 
-[⬆ Back to Top](#-zenwhisper)
+[Back to Top](#zenwhisper)
 
 </div>
