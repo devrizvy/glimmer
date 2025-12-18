@@ -4,6 +4,8 @@ import { io } from "socket.io-client";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { useAuth } from "../../contexts/AuthContext";
 import { usePrivateMessages } from "../../hooks/usePrivateMessages";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 
 interface Message {
 	id: string;
@@ -23,6 +25,15 @@ const ChatFeed = () => {
 	const navigate = useNavigate();
 	const { id } = useParams(); // get partner email from URL
 	const { user, isAuthenticated } = useAuth();
+
+	// Helper function to format time in 12-hour format with AM/PM
+	const formatTime12Hour = (date: Date) => {
+		return date.toLocaleTimeString([], {
+			hour: 'numeric',
+			minute: '2-digit',
+			hour12: true
+		});
+	};
 
 	// Try to get partner info from location.state, else use the URL parameter
 	let partnerUsername, partnerEmail;
@@ -70,7 +81,7 @@ const ChatFeed = () => {
 					receiverEmail: msg.receiverEmail,
 					receiverUsername: msg.receiverUsername,
 					message: msg.message,
-					time: msg.time,
+					time: msg.time || formatTime12Hour(new Date(msg.createdAt)),
 					isOwn: msg.senderEmail === currentUserEmail,
 					createdAt: new Date(msg.createdAt),
 				}),
@@ -129,7 +140,7 @@ const ChatFeed = () => {
 					receiverEmail: data.receiverEmail,
 					receiverUsername: data.receiverUsername,
 					message: data.message,
-					time: data.time,
+					time: data.time || formatTime12Hour(new Date()),
 					isOwn: data.senderEmail === currentUserEmail,
 					createdAt: new Date(),
 				};
@@ -196,10 +207,7 @@ const ChatFeed = () => {
 				receiverEmail: partnerEmail,
 				receiverUsername: partnerUsername,
 				message: currentMessage,
-				time:
-					new Date(Date.now()).getHours().toString().padStart(2, "0") +
-					":" +
-					new Date(Date.now()).getMinutes().toString().padStart(2, "0"),
+				time: formatTime12Hour(new Date()),
 			};
 
 			// Send message via socket - the server will echo it back
@@ -347,28 +355,20 @@ const ChatFeed = () => {
 				</div>
 
 				{/* Messages Area */}
-				<div className="flex-1 overflow-y-auto p-6">
+				<div className="flex-1 overflow-y-auto p-4 bg-gradient-to-b from-background/50 to-background">
 					{isPending ? (
 						<div className="flex items-center justify-center h-full">
 							<div className="text-center">
-								<div className="w-12 h-12 mira-glass rounded-2xl flex items-center justify-center mx-auto mb-6">
-									<div
-										className="w-6 h-6 border-2 border-primary/30 border-t-primary rounded-full animate-spin"
-										style={{ borderTopColor: "oklch(0.55 0.08 145)" }}
-									></div>
-								</div>
-								<h3 className="mira-title text-lg mb-2">
+								<div className="w-16 h-16 border-4 border-primary/30 border-t-primary rounded-full animate-spin mx-auto"></div>
+								<h1 className="text-xl font-bold text-foreground mt-4">
 									Loading conversation...
-								</h3>
-								<p className="text-sm text-foreground/70">
-									Please wait while we load your messages
-								</p>
+								</h1>
 							</div>
 						</div>
 					) : messages.length === 0 ? (
 						<div className="flex items-center justify-center h-full">
 							<div className="text-center p-8 max-w-md">
-								<div className="w-20 h-20 mx-auto mb-6 mira-glass rounded-2xl flex items-center justify-center zen-float">
+								<div className="w-20 h-20 mx-auto mb-6 rounded-2xl flex items-center justify-center mira-glass">
 									<span className="text-3xl">👋</span>
 								</div>
 								<h3 className="mira-title text-xl mb-4">Start a conversation</h3>
@@ -378,63 +378,106 @@ const ChatFeed = () => {
 							</div>
 						</div>
 					) : (
-						<div className="space-y-4 max-w-6xl mx-auto">
+						<div className="space-y-6 max-w-5xl mx-auto">
 							{messages.map((msg, index) => (
 								<div
 									key={`${msg.senderEmail}-${msg.time}-${msg.id}`}
-									className={`flex ${msg.isOwn ? "justify-end" : "justify-start"} animate-fadeIn`}
-									style={{ animationDelay: `${index * 100}ms` }}
+									className={`group ${msg.isOwn ? "flex justify-end" : "flex justify-start"} animate-fadeIn`}
+									style={{ animationDelay: `${index * 50}ms` }}
 								>
-									<div
-										className={`max-w-xs lg:max-w-md px-5 py-3 rounded-2xl ${
-											msg.isOwn
-												? "text-white rounded-br-none"
-												: "mira-glass rounded-bl-none border border-sidebar-border/50"
-										}`}
-										style={
-											msg.isOwn
-												? {
-														background: "oklch(0.55 0.08 145)",
-														boxShadow: "0 4px 20px oklch(0.55 0.08 145 / 0.3)",
-													}
-												: {}
-										}
-									>
-										<p className="text-sm leading-relaxed">{msg.message}</p>
-										<p
-											className={`text-xs mt-2 ${
-												msg.isOwn
-													? "text-white/70"
-													: "text-foreground/50"
-											}`}
-										>
-											{msg.time}
-										</p>
+									<div className={`flex gap-4 max-w-lg lg:max-w-2xl ${msg.isOwn ? "flex-row-reverse" : "flex-row"}`}>
+										{/* Avatar */}
+										<div className="relative flex-shrink-0">
+											<div className="w-12 h-12 bg-gradient-to-br from-primary to-primary/80 rounded-xl flex items-center justify-center shadow-lg group-hover:scale-105 transition-transform">
+												<span className="text-lg font-bold text-primary-foreground">
+													{msg.isOwn ? currentUsername.charAt(0).toUpperCase() : partnerUsername.charAt(0).toUpperCase()}
+												</span>
+											</div>
+											{!msg.isOwn && (
+												<div className="absolute -bottom-1 -right-1 w-4 h-4 bg-green-500 rounded-full border-2 border-background"></div>
+											)}
+										</div>
+
+										{/* Message Content */}
+										<div className={`flex-1 min-w-0 ${msg.isOwn ? "text-right" : "text-left"}`}>
+											{/* Header with Author and Time */}
+											<div className="flex items-center gap-3 mb-2">
+												<span className="font-semibold text-foreground text-sm leading-tight">
+													{msg.isOwn ? "You" : msg.senderUsername}
+												</span>
+												<span className="text-xs text-foreground/50 font-medium bg-background/50 px-2 py-1 rounded-full">
+													{msg.time}
+												</span>
+											</div>
+
+											{/* Message Bubble */}
+											<div
+												className={`relative inline-block px-5 py-4 rounded-2xl shadow-sm group-hover:shadow-md transition-shadow ${
+													msg.isOwn
+														? "bg-gradient-to-br from-primary to-primary/90 text-primary-foreground rounded-br-none"
+														: "mira-glass rounded-bl-none border border-border/50"
+												}`}
+											>
+												{!msg.isOwn && (
+													<div className="absolute -left-2 top-4 w-0 h-0 border-t-8 border-t-transparent border-b-8 border-b-transparent border-r-8 border-r-sidebar-accent/30"></div>
+												)}
+												{msg.isOwn && (
+													<div className="absolute -right-2 top-4 w-0 h-0 border-t-8 border-t-transparent border-b-8 border-b-transparent border-l-8 border-l-primary"></div>
+												)}
+												<p className="text-base leading-relaxed break-words">
+													{msg.message}
+												</p>
+											</div>
+
+											{/* Message Status for own messages */}
+											{msg.isOwn && (
+												<div className="flex items-center gap-1 mt-2 justify-end">
+													<span className="text-xs text-primary/60">✓ Sent</span>
+												</div>
+											)}
+										</div>
 									</div>
 								</div>
 							))}
 							{isTyping && (
 								<div className="flex justify-start">
-									<div className="mira-glass rounded-2xl rounded-bl-none px-5 py-3 max-w-xs border border-sidebar-border/50">
-										<div className="flex space-x-1">
-											<div
-												className="w-2 h-2 rounded-full animate-bounce"
-												style={{ backgroundColor: "oklch(0.55 0.08 145)" }}
-											></div>
-											<div
-												className="w-2 h-2 rounded-full animate-bounce"
-												style={{
-													backgroundColor: "oklch(0.55 0.08 145)",
-													animationDelay: "0.1s",
-												}}
-											></div>
-											<div
-												className="w-2 h-2 rounded-full animate-bounce"
-												style={{
-													backgroundColor: "oklch(0.55 0.08 145)",
-													animationDelay: "0.2s",
-												}}
-											></div>
+									<div className="flex gap-4 max-w-lg lg:max-w-2xl">
+										<div className="relative flex-shrink-0">
+											<div className="w-12 h-12 bg-gradient-to-br from-primary to-primary/80 rounded-xl flex items-center justify-center shadow-lg">
+												<span className="text-lg font-bold text-primary-foreground">
+													{partnerUsername.charAt(0).toUpperCase()}
+												</span>
+											</div>
+											<div className="absolute -bottom-1 -right-1 w-4 h-4 bg-green-500 rounded-full border-2 border-background"></div>
+										</div>
+										<div className="flex-1">
+											<div className="flex items-center gap-3 mb-2">
+												<span className="font-semibold text-foreground text-sm">
+													{partnerUsername}
+												</span>
+											</div>
+											<div className="mira-glass rounded-2xl rounded-bl-none border border-border/50 px-5 py-4 inline-block shadow-sm">
+												<div className="flex space-x-1">
+													<div
+														className="w-2 h-2 rounded-full animate-bounce"
+														style={{ backgroundColor: "oklch(0.55 0.08 145)" }}
+													></div>
+													<div
+														className="w-2 h-2 rounded-full animate-bounce"
+														style={{
+															backgroundColor: "oklch(0.55 0.08 145)",
+															animationDelay: "0.1s",
+														}}
+													></div>
+													<div
+														className="w-2 h-2 rounded-full animate-bounce"
+														style={{
+															backgroundColor: "oklch(0.55 0.08 145)",
+															animationDelay: "0.2s",
+														}}
+													></div>
+												</div>
+											</div>
 										</div>
 									</div>
 								</div>
@@ -445,45 +488,56 @@ const ChatFeed = () => {
 				</div>
 
 				{/* Message Input */}
-				<div className="p-4 mira-glass border-t border-sidebar-border/50 rounded-t-2xl">
-					<div className="flex items-center gap-3 mb-4">
-						<div
-							className={`w-2 h-2 rounded-full ${isConnected ? "bg-primary" : "bg-destructive"}`}
-						></div>
-						<span className="text-xs text-foreground/60 font-medium">
-							{isConnected ? "Connected" : "Connecting..."}
-						</span>
-					</div>
+				<div className="mira-glass border-t border-sidebar-border">
+					<div className="container mx-auto p-6">
+						<div className="flex items-center gap-3 mb-4">
+							<div
+								className={`w-3 h-3 rounded-full ${isConnected ? "bg-green-500" : "bg-destructive"} ${isConnected ? "animate-pulse" : ""}`}
+							></div>
+							<span className="text-sm font-medium text-foreground/80">
+								{isConnected ? `💬 Connected to ${partnerUsername}` : "🔄 Connecting to chat..."}
+							</span>
+						</div>
 
-					<form onSubmit={handleOnSubmit} className="flex gap-3">
-						<input
-							type="text"
-							value={currentMessage}
-							onChange={(e) => {
-								setCurrentMessage(e.target.value);
-								handleTyping();
-							}}
-							placeholder={`Message ${partnerUsername}...`}
-							className="mira-search flex-1 px-4 py-3 text-foreground placeholder-sidebar-foreground/40"
-						/>
-						<button
-							type="submit"
-							disabled={currentMessage.trim() === "" || !isConnected}
-							className="mira-action-btn px-6 py-3 text-white rounded-xl disabled:opacity-50 disabled:cursor-not-allowed transition-all flex items-center gap-2"
-							style={{
-								background:
-									currentMessage.trim() && isConnected
-										? "oklch(0.55 0.08 145)"
-										: "oklch(0.55 0.08 145 / 0.3)",
-								boxShadow:
-									currentMessage.trim() && isConnected
-										? "0 4px 20px oklch(0.55 0.08 145 / 0.3)"
-										: "none",
-							}}
-						>
-							<Send size={16} />
-						</button>
-					</form>
+						<form onSubmit={handleOnSubmit} className="flex items-end gap-4">
+							<div className="flex-1 relative">
+								<Input
+									type="text"
+									value={currentMessage}
+									onChange={(e) => {
+										setCurrentMessage(e.target.value);
+										handleTyping();
+									}}
+									placeholder={`Share your thoughts with ${partnerUsername}...`}
+									className="mira-search pr-12 h-12 text-base"
+								/>
+								<div className="absolute right-3 top-1/2 transform -translate-y-1/2">
+									<span className="text-xs text-foreground/40">
+										{currentMessage.length}/500
+									</span>
+								</div>
+							</div>
+
+							<Button
+								type="submit"
+								disabled={!currentMessage.trim() || !isConnected}
+								className="px-6 h-12 mira-action-btn text-primary-foreground rounded-xl font-medium disabled:opacity-50 disabled:cursor-not-allowed transition-all flex items-center gap-2 text-base shadow-lg hover:shadow-xl"
+								style={{
+									background: "oklch(0.55 0.08 145)",
+									boxShadow: "0 4px 20px oklch(0.55 0.08 145 / 0.3)",
+								}}
+							>
+								<Send size={18} />
+								<span>{currentMessage.trim() ? "Send Message" : "Send"}</span>
+							</Button>
+						</form>
+
+						<div className="mt-3 text-center">
+							<span className="text-xs text-foreground/50 font-medium">
+								💡 Be thoughtful and respectful in your conversations
+							</span>
+						</div>
+					</div>
 				</div>
 			</div>
 		</div>

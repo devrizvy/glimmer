@@ -127,6 +127,15 @@ const RoomChat = () => {
 		};
 	}, [id, username, roomName, isAuthenticated, navigate]);
 
+	// Helper function to format time in 12-hour format with AM/PM
+	const formatTime12Hour = (date: Date) => {
+		return date.toLocaleTimeString([], {
+			hour: 'numeric',
+			minute: '2-digit',
+			hour12: true
+		});
+	};
+
 	// Update messages when initialMessages are loaded
 	useEffect(() => {
 		if (initialMessages && initialMessages.length > 0) {
@@ -136,7 +145,7 @@ const RoomChat = () => {
 				room: msg.room || roomName,
 				author: msg.author || "Unknown",
 				message: msg.message || "",
-				time: msg.time || new Date(msg.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+				time: msg.time || formatTime12Hour(new Date(msg.createdAt)),
 				isOwn: msg.author === username,
 				isSystem: msg.author === "System",
 				createdAt: new Date(msg.createdAt),
@@ -150,7 +159,7 @@ const RoomChat = () => {
 				room: roomName,
 				author: "System",
 				message: `🚀 Welcome to the ${roomName} classroom`,
-				time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+				time: formatTime12Hour(new Date()),
 				isSystem: true,
 				createdAt: new Date(),
 			};
@@ -167,10 +176,7 @@ const RoomChat = () => {
 				room: roomName,
 				author: username,
 				message: message.trim(),
-				time:
-					new Date(Date.now()).getHours().toString().padStart(2, "0") +
-					":" +
-					new Date(Date.now()).getMinutes().toString().padStart(2, "0"),
+				time: formatTime12Hour(new Date()),
 			};
 
 			// Send message via socket - the server will echo it back to all clients
@@ -262,7 +268,7 @@ const RoomChat = () => {
 			</div>
 
 			{/* Messages Area */}
-			<div className="flex-1 overflow-y-auto p-4">
+			<div className="flex-1 overflow-y-auto p-4 bg-gradient-to-b from-background/50 to-background">
 				{isPending ? (
 					<div className="flex items-center justify-center h-full">
 						<div className="text-center">
@@ -288,55 +294,73 @@ const RoomChat = () => {
 						</div>
 					</div>
 				) : (
-					<div className="space-y-4 max-w-4xl mx-auto">
-						{messages.map((msg) => (
+					<div className="space-y-6 max-w-5xl mx-auto">
+						{messages.map((msg, index) => (
 							<div
 								key={msg.id}
-								className={`${msg.isSystem ? "flex justify-center" : `flex gap-3 animate-fadeIn ${msg.isOwn ? "justify-end" : "justify-start"}`}`}
+								className={`group ${msg.isSystem ? "flex justify-center" : `${msg.isOwn ? "flex justify-end" : "flex justify-start"} animate-fadeIn`}`}
+								style={{ animationDelay: `${index * 50}ms` }}
 							>
 								{msg.isSystem ? (
-									<div className="px-4 py-2 bg-primary/10 border border-primary/20 rounded-full text-sm text-primary font-medium">
+									<div className="px-6 py-3 bg-primary/10 border border-primary/20 rounded-full text-sm text-primary font-medium mira-glass">
 										<span className="flex items-center gap-2">
 											<Zap className="w-4 h-4" />
 											{msg.message}
 										</span>
 									</div>
 								) : (
-									<>
-										{!msg.isOwn && (
-											<div className="w-10 h-10 bg-primary rounded-xl flex items-center justify-center flex-shrink-0">
+									<div className={`flex gap-4 max-w-lg lg:max-w-2xl ${msg.isOwn ? "flex-row-reverse" : "flex-row"}`}>
+										{/* Avatar */}
+										<div className="relative flex-shrink-0">
+											<div className="w-12 h-12 bg-gradient-to-br from-primary to-primary/80 rounded-xl flex items-center justify-center shadow-lg group-hover:scale-105 transition-transform">
 												<span className="text-lg font-bold text-primary-foreground">
 													{msg.author.charAt(0).toUpperCase()}
 												</span>
 											</div>
-										)}
-										<div className={`max-w-xs lg:max-w-md ${msg.isOwn ? "order-first" : ""}`}>
-											<div className={`flex items-baseline gap-2 mb-1 ${msg.isOwn ? "justify-end" : ""}`}>
-												<span className="font-semibold text-foreground text-sm">
+											{!msg.isOwn && (
+												<div className="absolute -bottom-1 -right-1 w-4 h-4 bg-green-500 rounded-full border-2 border-background"></div>
+											)}
+										</div>
+
+										{/* Message Content */}
+										<div className={`flex-1 min-w-0 ${msg.isOwn ? "text-right" : "text-left"}`}>
+											{/* Header with Author and Time */}
+											<div className="flex items-center gap-3 mb-2">
+												<span className="font-semibold text-foreground text-sm leading-tight">
 													{msg.isOwn ? "You" : msg.author}
 												</span>
-												<span className="text-xs text-foreground/50">
+												<span className="text-xs text-foreground/50 font-medium bg-background/50 px-2 py-1 rounded-full">
 													{msg.time}
 												</span>
 											</div>
+
+											{/* Message Bubble */}
 											<div
-												className={`inline-block px-4 py-3 rounded-lg ${
+												className={`relative inline-block px-5 py-4 rounded-2xl shadow-sm group-hover:shadow-md transition-shadow ${
 													msg.isOwn
-														? "bg-primary text-primary-foreground rounded-br-sm"
-														: "bg-sidebar-accent/30 text-foreground rounded-bl-sm border border-sidebar-border"
+														? "bg-gradient-to-br from-primary to-primary/90 text-primary-foreground rounded-br-none"
+														: "mira-glass rounded-bl-none border border-border/50"
 												}`}
 											>
-												<p className="leading-relaxed">{msg.message}</p>
+												{!msg.isOwn && (
+													<div className="absolute -left-2 top-4 w-0 h-0 border-t-8 border-t-transparent border-b-8 border-b-transparent border-r-8 border-r-sidebar-accent/30"></div>
+												)}
+												{msg.isOwn && (
+													<div className="absolute -right-2 top-4 w-0 h-0 border-t-8 border-t-transparent border-b-8 border-b-transparent border-l-8 border-l-primary"></div>
+												)}
+												<p className="text-base leading-relaxed break-words">
+													{msg.message}
+												</p>
 											</div>
+
+											{/* Message Status for own messages */}
+											{msg.isOwn && (
+												<div className="flex items-center gap-1 mt-2 justify-end">
+													<span className="text-xs text-primary/60">✓ Sent</span>
+												</div>
+											)}
 										</div>
-										{msg.isOwn && (
-											<div className="w-10 h-10 bg-primary rounded-xl flex items-center justify-center flex-shrink-0 order-last">
-												<span className="text-lg font-bold text-primary-foreground">
-													{msg.author.charAt(0).toUpperCase()}
-												</span>
-											</div>
-										)}
-									</>
+									</div>
 								)}
 							</div>
 						))}
@@ -347,24 +371,27 @@ const RoomChat = () => {
 
 			{/* Online Students Bar */}
 			{onlineUsers.length > 0 && (
-				<div className="mira-glass border-t border-sidebar-border px-4 py-3">
+				<div className="mira-glass border-t border-sidebar-border px-6 py-4">
 					<div className="container mx-auto">
-						<div className="flex items-center gap-3 overflow-x-auto">
-							<span className="text-sm text-foreground/60 whitespace-nowrap font-medium">
-								Online Students:
-							</span>
+						<div className="flex items-center gap-4 overflow-x-auto">
+							<div className="flex items-center gap-2 text-sm font-medium text-foreground/80 whitespace-nowrap">
+								<div className="w-3 h-3 bg-green-500 rounded-full animate-pulse"></div>
+								<span>{onlineUsers.length} {onlineUsers.length === 1 ? "Student" : "Students"} Online</span>
+							</div>
 							<div className="flex gap-2 flex-wrap">
 								{onlineUsers.map((user, idx) => (
 									<div
 										key={idx}
-										className={`flex items-center gap-2 px-3 py-1 rounded-full text-xs font-medium ${
+										className={`flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium transition-all hover:scale-105 ${
 											user === username
-												? "bg-primary/10 text-primary border-primary/20"
-												: "bg-sidebar-accent/30 text-foreground/70 border-sidebar-border"
+												? "bg-primary/10 text-primary border border-primary/30 shadow-sm"
+												: "mira-glass text-foreground/80 border border-border/50"
 										}`}
 									>
-										<div className="w-2 h-2 bg-primary rounded-full"></div>
-										<span>{user === username ? `${user} (you)` : user}</span>
+										<div className={`w-2.5 h-2.5 rounded-full ${
+											user === username ? "bg-primary" : "bg-green-500 animate-pulse"
+										}`}></div>
+										<span className="font-medium">{user === username ? "You" : user}</span>
 									</div>
 								))}
 							</div>
@@ -375,40 +402,51 @@ const RoomChat = () => {
 
 			{/* Input Section */}
 			<div className="mira-glass border-t border-sidebar-border">
-				<div className="container mx-auto p-4">
-					<div className="flex items-center gap-2 mb-2">
+				<div className="container mx-auto p-6">
+					<div className="flex items-center gap-3 mb-4">
 						<div
-							className={`w-2 h-2 rounded-full ${isConnected ? "bg-primary" : "bg-destructive"} ${isConnected ? "animate-pulse" : ""}`}
+							className={`w-3 h-3 rounded-full ${isConnected ? "bg-green-500" : "bg-destructive"} ${isConnected ? "animate-pulse" : ""}`}
 						></div>
-						<span className="text-xs text-foreground/60">
-							{isConnected ? "Connected to classroom" : "Connecting..."}
+						<span className="text-sm font-medium text-foreground/80">
+							{isConnected ? `📚 Connected to ${roomName}` : "🔄 Connecting to classroom..."}
 						</span>
 					</div>
 
-					<form onSubmit={handleSendMessage} className="flex items-end gap-3">
-						<div className="flex-1">
+					<form onSubmit={handleSendMessage} className="flex items-end gap-4">
+						<div className="flex-1 relative">
 							<Input
 								type="text"
 								value={message}
 								onChange={(e) => setMessage(e.target.value)}
-								placeholder={`Type your message in ${roomName} classroom...`}
-								className="mira-search"
+								placeholder={`Share your thoughts in ${roomName} classroom...`}
+								className="mira-search pr-12 h-12 text-base"
 							/>
+							<div className="absolute right-3 top-1/2 transform -translate-y-1/2">
+								<span className="text-xs text-foreground/40">
+									{message.length}/500
+								</span>
+							</div>
 						</div>
 
 						<Button
 							type="submit"
 							disabled={!message.trim() || !isConnected}
-							className="px-6 py-3 bottom-0 mira-action-btn text-primary-foreground rounded-xl font-medium disabled:opacity-50 disabled:cursor-not-allowed transition-all flex items-center gap-2"
+							className="px-6 h-12 mira-action-btn text-primary-foreground rounded-xl font-medium disabled:opacity-50 disabled:cursor-not-allowed transition-all flex items-center gap-2 text-base shadow-lg hover:shadow-xl"
 							style={{
 								background: "oklch(0.55 0.08 145)",
 								boxShadow: "0 4px 20px oklch(0.55 0.08 145 / 0.3)",
 							}}
 						>
 							<Send size={18} />
-							<span>Send</span>
+							<span>{message.trim() ? "Send Message" : "Send"}</span>
 						</Button>
 					</form>
+
+					<div className="mt-3 text-center">
+						<span className="text-xs text-foreground/50 font-medium">
+							💡 Be respectful and constructive in your educational discussions
+						</span>
+					</div>
 				</div>
 			</div>
 		</div>
