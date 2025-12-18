@@ -7,6 +7,7 @@ import { useAuth } from "../../contexts/AuthContext";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import useRoomMessages from "../../hooks/useRoomMessages";
+import toast from "react-hot-toast";
 
 interface RoomMessage {
 	id: string;
@@ -64,12 +65,14 @@ const RoomChat = () => {
 
 		newSocket.on("connect", () => {
 			setIsConnected(true);
+			toast.success(`Connected to ${roomName}`);
 			// Join the room
 			newSocket.emit("join_room", id, username);
 		});
 
 		newSocket.on("disconnect", () => {
 			setIsConnected(false);
+			toast.error("Connection lost. Trying to reconnect...");
 		});
 
 		// Listen for room messages

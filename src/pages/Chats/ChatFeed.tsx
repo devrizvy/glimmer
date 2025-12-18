@@ -6,6 +6,7 @@ import { useAuth } from "../../contexts/AuthContext";
 import { usePrivateMessages } from "../../hooks/usePrivateMessages";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import toast from "react-hot-toast";
 
 interface Message {
 	id: string;
@@ -108,6 +109,7 @@ const ChatFeed = () => {
 
 		newSocket.on("connect", () => {
 			setIsConnected(true);
+			toast.success(`Connected to ${partnerUsername}`);
 			// Join the private chat
 			newSocket.emit("join_private_chat", chatId, currentUserEmail);
 			newSocket.emit("user_online", currentUserEmail);
@@ -115,6 +117,7 @@ const ChatFeed = () => {
 
 		newSocket.on("disconnect", () => {
 			setIsConnected(false);
+			toast.error("Connection lost. Trying to reconnect...");
 		});
 
 		// Listen for incoming messages

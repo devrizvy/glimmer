@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import api from "../../services/axios";
+import toast from "react-hot-toast";
 
 const Login: React.FC = () => {
 	const { loginWithToken, isAuthenticated } = useAuth();
@@ -60,14 +61,12 @@ const Login: React.FC = () => {
 			// Update auth context with token
 			loginWithToken(data.userInfo, data.token);
 
+			toast.success(`Welcome back, ${data.userInfo.username}!`);
 			navigate("/chat");
 		} catch (err: any) {
-			if (err.response?.data?.message) {
-				setError(err.response.data.message);
-			} else {
-				setError("Connection error. Please try again.");
-			}
-			console.error("Login error:", err);
+			const errorMessage = err.response?.data?.message || "Connection error. Please try again.";
+			setError(errorMessage);
+			toast.error(errorMessage);
 		} finally {
 			setIsLoading(false);
 		}

@@ -1,4 +1,5 @@
 import React, { createContext, useContext, useReducer, useEffect } from "react";
+import toast from "react-hot-toast";
 
 interface User {
 	email: string;
@@ -98,7 +99,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
 					payload: { user, token: savedToken },
 				});
 			} catch (error) {
-				console.error("Error parsing saved user:", error);
+				toast.error("Session expired. Please login again.");
 				localStorage.removeItem("zenwhisper_user");
 				localStorage.removeItem("zenwhisper_token");
 				dispatch({ type: "SET_LOADING", payload: false });

@@ -13,6 +13,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent } from "@/components/ui/card";
 import api from "../../services/axios";
+import toast from "react-hot-toast";
 
 interface ValidationState {
 	email: boolean;
@@ -155,12 +156,9 @@ const Signup: React.FC = () => {
 				navigate("/login");
 			}, 2000);
 		} catch (err: any) {
-			if (err.response?.data?.message) {
-				setError(err.response.data.message);
-			} else {
-				setError("Connection error. Please try again.");
-			}
-			console.error("Signup error:", err);
+			const errorMessage = err.response?.data?.message || "Connection error. Please try again.";
+			setError(errorMessage);
+			toast.error(errorMessage);
 		} finally {
 			setIsLoading(false);
 		}

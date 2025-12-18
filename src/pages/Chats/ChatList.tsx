@@ -5,6 +5,7 @@ import { useAuth } from "../../contexts/AuthContext";
 import { useUserChats } from "../../hooks/usePrivateMessages";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import toast from "react-hot-toast";
 
 interface ChatUser {
 	_id : string;
@@ -26,6 +27,13 @@ const ChatList = () => {
 	const { isPending, chats, isError, error, refetch } = useUserChats(
 		user?.email || "",
 	);
+
+	// Show success toast when chats load successfully
+	useEffect(() => {
+		if (chats && chats.length > 0 && !isPending) {
+			toast.success(`Loaded ${chats.length} conversation${chats.length === 1 ? '' : 's'}`);
+		}
+	}, [chats, isPending]);
 
 	// Transform backend chats to frontend format
 	const chatUsers: ChatUser[] = chats.map((chat: any) => ({
@@ -51,8 +59,7 @@ const ChatList = () => {
 		user.username.toLowerCase().includes(searchQuery.toLowerCase()),
 	);
 
-	console.log(filteredUsers)
-
+	
 	// Redirect to login if not authenticated
 	useEffect(() => {
 		if (!isAuthenticated) {

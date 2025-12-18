@@ -1,6 +1,7 @@
 import { Route, Routes } from "react-router-dom";
 import { ThemeProvider } from "./contexts/ThemeContext";
 import { AuthProvider } from "./contexts/AuthContext";
+import { Toaster } from "react-hot-toast";
 import About from "./pages/About/About";
 import Home from "./pages/Home/Home";
 import Layout from "./Layout/MainLayout";
@@ -39,6 +40,30 @@ export function App() {
 						<Route path="overview" element={<Overview />} />
 					</Route>
 				</Routes>
+				<Toaster
+					position="top-right"
+					toastOptions={{
+						duration: 4000,
+						style: {
+							background: 'var(--background)',
+							color: 'var(--foreground)',
+							border: '1px solid var(--border)',
+							borderRadius: 'var(--radius)',
+						},
+						success: {
+							iconTheme: {
+								primary: 'oklch(0.55 0.08 145)',
+								secondary: 'var(--background)',
+							},
+						},
+						error: {
+							iconTheme: {
+								primary: 'oklch(0.60 0.18 25)',
+								secondary: 'var(--background)',
+							},
+						},
+					}}
+				/>
 			</AuthProvider>
 		</ThemeProvider>
 	);

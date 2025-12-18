@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import toast, { Toaster } from "react-hot-toast";
+import toast from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
 import { io } from "socket.io-client";
 import { LogOut, Copy, ArrowRight, Users, Plus } from "lucide-react";
@@ -195,8 +195,6 @@ const Room = () => {
 
 	return (
 		<div className="min-h-screen mira-content px-2 sm:px-0">
-			<Toaster position="top-right" />
-
 			{/* Header */}
 			<div className="text-center mb-8 pt-8">
 				<h1 className="mira-title text-4xl mb-2">Classroom</h1>
@@ -376,12 +374,12 @@ const Room = () => {
 										<h3 className="text-base sm:text-lg font-semibold mb-4 text-foreground">
 											Recent Classrooms
 										</h3>
-										<div className="space-y-3">
+										<div className="space-y-3 p-5">
 											{recentRooms.map((room, idx) => (
 												<Button
 													key={idx}
 													onClick={() => joinExistingRoom(room)}
-													className="w-full flex items-center justify-between bg-sidebar-accent/20 hover:bg-sidebar-accent/30 text-foreground p-3 sm:p-4 rounded-lg border border-sidebar-border transition-colors"
+													className="w-full flex items-center justify-between bg-sidebar-accent/20 hover:bg-sidebar-accent/30 text-foreground p-5 sm:p-8 rounded-lg border border-sidebar-border transition-colors"
 												>
 													<div className="text-left min-w-0 flex-1">
 														<div className="font-medium text-sm sm:text-base truncate mb-1">
