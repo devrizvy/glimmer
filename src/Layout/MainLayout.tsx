@@ -1,4 +1,4 @@
-import { Outlet } from "react-router";
+import { Outlet } from "react-router-dom";
 import { AppSidebar } from "@/components/app-sidebar";
 import {
 	SidebarProvider,
@@ -10,7 +10,7 @@ import { Search, Plus, MoreVertical, Moon, Bell } from "lucide-react";
 
 export default function Layout() {
 	return (
-		<SidebarProvider>
+		<>
 			<AppSidebar />
 			<SidebarInset className="bg-background/90 backdrop-blur-sm">
 				{/* Enhanced Header */}
@@ -71,6 +71,6 @@ export default function Layout() {
 					</div>
 				</main>
 			</SidebarInset>
-		</SidebarProvider>
+		</>
 	);
 }

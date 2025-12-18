@@ -46,7 +46,7 @@ const UsersList = () => {
 		<div className="min-h-screen zen-pattern">
 			<div className="flex-1 flex flex-col h-[calc(100vh-4rem)]">
 				{/* Header */}
-				<div className="p-6 border-b border-sidebar-border/50 glass-panel border-b rounded-b-2xl">
+				<div className="p-6 border-b border-sidebar-border/50 glass-panel  rounded-b-2xl">
 					<div className="flex items-center gap-3 mb-4">
 						<button
 							onClick={() => navigate("/chat")}

@@ -5,6 +5,7 @@ import { useAuth } from "../../contexts/AuthContext";
 import { useUserChats } from "../../hooks/usePrivateMessages";
 
 interface ChatUser {
+	_id : string;
 	email: string;
 	username: string;
 	lastMessage?: string;
@@ -47,6 +48,8 @@ const ChatList = () => {
 	const filteredUsers = chatUsers.filter((user) =>
 		user.username.toLowerCase().includes(searchQuery.toLowerCase()),
 	);
+
+	console.log(filteredUsers)
 
 	// Redirect to login if not authenticated
 	useEffect(() => {
@@ -109,6 +112,9 @@ const ChatList = () => {
 			</div>
 		);
 	}
+
+	let count = 0 
+
 
 	return (
 		<div className="min-h-screen zen-pattern">
@@ -206,7 +212,7 @@ const ChatList = () => {
 						<div className="space-y-3">
 							{filteredUsers.map((user) => (
 								<div
-									key={user.email}
+									key={count++}
 									onClick={() => handleChatSelect(user)}
 									className="glass-panel rounded-xl p-4 hover:scale-[1.02] cursor-pointer transition-all animate-fadeIn group"
 								>

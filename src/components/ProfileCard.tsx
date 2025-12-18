@@ -17,7 +17,7 @@ import {
 	User,
 } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
-import { useNavigate } from "react-router";
+import { useNavigate } from "react-router-dom";
 const ProfileCard = () => {
 	const { logout, user } = useAuth();
 	const navigate = useNavigate();

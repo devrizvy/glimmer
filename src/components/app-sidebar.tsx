@@ -1,6 +1,6 @@
-import { NavLink } from "react-router";
+import { NavLink } from "react-router-dom";
 import { useAuth } from "../contexts/AuthContext";
-import { useNavigate } from "react-router";
+import { useNavigate } from "react-router-dom";
 import {
 	Users,
 	NotebookPen,
@@ -285,7 +285,7 @@ export function AppSidebar() {
 
 					{/* Zen Quote */}
 					<div className="flex items-center gap-2 text-sidebar-foreground/50 text-xs">
-						<Feather className="w-4 h-4 flex-shrink-0" />
+						<Feather className="w-4 h-4 " />
 						<p className="font-light italic leading-relaxed">
 							"In the stillness of mind, wisdom whispers"
 						</p>
