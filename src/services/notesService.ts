@@ -40,26 +40,111 @@ export const notesApi = {
     limit?: number;
     offset?: number;
   }): Promise<NotesResponse> => {
-    const response = await api.get(NOTES_ENDPOINTS.getAll, { params });
-    return response.data.data; // Extract data from backend response format
+    try {
+      const response = await api.get(NOTES_ENDPOINTS.getAll, { params });
+      let responseData: any;
+
+      // Handle different response formats
+      if (response.data.data) {
+        responseData = response.data.data;
+      } else if (response.data) {
+        responseData = response.data;
+      } else {
+        // Fallback empty response
+        return { notes: [], folders: [], total: 0 };
+      }
+
+      // Transform notes to normalize ID
+      const notes = (responseData.notes || []).map((note: any) => ({
+        id: note._id || note.id,
+        title: note.title,
+        content: note.content,
+        folderId: note.folderId,
+        tags: note.tags || [],
+        isPinned: note.isPinned || false,
+        isArchived: note.isArchived || false,
+        color: note.color,
+        createdAt: note.createdAt,
+        updatedAt: note.updatedAt
+      }));
+
+      // Transform folders to normalize ID
+      const folders = (responseData.folders || []).map((folder: any) => ({
+        id: folder._id || folder.id,
+        name: folder.name,
+        color: folder.color,
+        icon: folder.icon,
+        createdAt: folder.createdAt,
+        noteCount: folder.noteCount || 0
+      }));
+
+      return {
+        notes,
+        folders,
+        total: responseData.total || notes.length
+      };
+    } catch (error) {
+      console.error('Error fetching notes:', error);
+      // Return empty data on error to prevent app crash
+      return { notes: [], folders: [], total: 0 };
+    }
   },
 
   // Get single note by ID
   getNote: async (id: string): Promise<Note> => {
     const response = await api.get(NOTES_ENDPOINTS.get(id));
-    return response.data.data; // Extract data from backend response format
+    const note = response.data.data || response.data;
+    // Normalize ID for frontend compatibility
+    return {
+      id: note._id || note.id,
+      title: note.title,
+      content: note.content,
+      folderId: note.folderId,
+      tags: note.tags || [],
+      isPinned: note.isPinned || false,
+      isArchived: note.isArchived || false,
+      color: note.color,
+      createdAt: note.createdAt,
+      updatedAt: note.updatedAt
+    };
   },
 
   // Create new note
   createNote: async (noteData: CreateNoteRequest): Promise<Note> => {
     const response = await api.post(NOTES_ENDPOINTS.create, noteData);
-    return response.data.data; // Extract data from backend response format
+    const note = response.data.data || response.data;
+    // Normalize ID for frontend compatibility
+    return {
+      id: note._id || note.id,
+      title: note.title,
+      content: note.content,
+      folderId: note.folderId,
+      tags: note.tags || [],
+      isPinned: note.isPinned || false,
+      isArchived: note.isArchived || false,
+      color: note.color,
+      createdAt: note.createdAt,
+      updatedAt: note.updatedAt
+    };
   },
 
   // Update existing note
   updateNote: async (id: string, noteData: UpdateNoteRequest): Promise<Note> => {
     const response = await api.put(NOTES_ENDPOINTS.update(id), noteData);
-    return response.data.data; // Extract data from backend response format
+    const note = response.data.data || response.data;
+    // Normalize ID for frontend compatibility
+    return {
+      id: note._id || note.id,
+      title: note.title,
+      content: note.content,
+      folderId: note.folderId,
+      tags: note.tags || [],
+      isPinned: note.isPinned || false,
+      isArchived: note.isArchived || false,
+      color: note.color,
+      createdAt: note.createdAt,
+      updatedAt: note.updatedAt
+    };
   },
 
   // Delete note
@@ -69,20 +154,50 @@ export const notesApi = {
 
   // Toggle pin status
   togglePinNote: async (id: string): Promise<Note> => {
-    const response = await api.post(NOTES_ENDPOINTS.pinNote(id));
-    return response.data.data; // Extract data from backend response format
+    try {
+      const response = await api.post(NOTES_ENDPOINTS.pinNote(id));
+      const note = response.data.data || response.data;
+      // Normalize ID for frontend compatibility
+      return {
+        id: note._id || note.id,
+        title: note.title,
+        content: note.content,
+        folderId: note.folderId,
+        tags: note.tags || [],
+        isPinned: note.isPinned || false,
+        isArchived: note.isArchived || false,
+        color: note.color,
+        createdAt: note.createdAt,
+        updatedAt: note.updatedAt
+      };
+    } catch (error) {
+      console.error('Pin endpoint not available:', error);
+      throw new Error('Pin/unpin feature is not yet implemented');
+    }
   },
 
   // Toggle archive status
   toggleArchiveNote: async (id: string): Promise<Note> => {
-    const response = await api.post(NOTES_ENDPOINTS.archiveNote(id));
-    return response.data.data; // Extract data from backend response format
-  },
-
-  // Search notes
-  searchNotes: async (query: string): Promise<NotesResponse> => {
-    const response = await api.get(NOTES_ENDPOINTS.search, { params: { q: query } });
-    return response.data.data; // Extract data from backend response format
+    try {
+      const response = await api.post(NOTES_ENDPOINTS.archiveNote(id));
+      const note = response.data.data || response.data;
+      // Normalize ID for frontend compatibility
+      return {
+        id: note._id || note.id,
+        title: note.title,
+        content: note.content,
+        folderId: note.folderId,
+        tags: note.tags || [],
+        isPinned: note.isPinned || false,
+        isArchived: note.isArchived || false,
+        color: note.color,
+        createdAt: note.createdAt,
+        updatedAt: note.updatedAt
+      };
+    } catch (error) {
+      console.error('Archive endpoint not available:', error);
+      throw new Error('Archive/unarchive feature is not yet implemented');
+    }
   },
 };
 
@@ -90,20 +205,60 @@ export const notesApi = {
 export const foldersApi = {
   // Get all folders
   getAllFolders: async (): Promise<Folder[]> => {
-    const response = await api.get(NOTES_ENDPOINTS.getAllFolders);
-    return response.data.data; // Extract data from backend response format
+    try {
+      const response = await api.get(NOTES_ENDPOINTS.getAllFolders);
+      let folders: any[] = [];
+
+      // Handle different response formats
+      if (response.data.data) {
+        folders = response.data.data;
+      } else if (response.data) {
+        folders = Array.isArray(response.data) ? response.data : response.data.folders || [];
+      }
+
+      // Transform _id to id for frontend compatibility
+      return folders.map(folder => ({
+        id: folder._id || folder.id,
+        name: folder.name,
+        color: folder.color,
+        icon: folder.icon,
+        createdAt: folder.createdAt,
+        noteCount: folder.noteCount || 0
+      }));
+    } catch (error) {
+      console.error('Failed to fetch folders:', error);
+      return [];
+    }
   },
 
   // Create new folder
   createFolder: async (folderData: CreateFolderRequest): Promise<Folder> => {
     const response = await api.post(NOTES_ENDPOINTS.createFolder, folderData);
-    return response.data.data; // Extract data from backend response format
+    const folder = response.data.data || response.data;
+    // Normalize ID for frontend compatibility
+    return {
+      id: folder._id || folder.id,
+      name: folder.name,
+      color: folder.color,
+      icon: folder.icon,
+      createdAt: folder.createdAt,
+      noteCount: folder.noteCount || 0
+    };
   },
 
   // Update folder
   updateFolder: async (id: string, folderData: Partial<CreateFolderRequest>): Promise<Folder> => {
     const response = await api.put(NOTES_ENDPOINTS.updateFolder(id), folderData);
-    return response.data.data; // Extract data from backend response format
+    const folder = response.data.data || response.data;
+    // Normalize ID for frontend compatibility
+    return {
+      id: folder._id || folder.id,
+      name: folder.name,
+      color: folder.color,
+      icon: folder.icon,
+      createdAt: folder.createdAt,
+      noteCount: folder.noteCount || 0
+    };
   },
 
   // Delete folder
@@ -111,6 +266,7 @@ export const foldersApi = {
     await api.delete(NOTES_ENDPOINTS.deleteFolder(id));
   },
 };
+
 
 // Batch operations
 export const batchOperations = {

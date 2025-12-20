@@ -19,19 +19,30 @@ export const foldersKeys = {
 
 // Fetch functions
 const fetchNotes = async (filters: Record<string, any>) => {
-  const response = await notesApi.getAllNotes(filters);
-  // Sort: pinned notes first, then by updated date
-  const sortedNotes = response.notes.sort((a, b) => {
-    if (a.isPinned && !b.isPinned) return -1;
-    if (!a.isPinned && b.isPinned) return 1;
-    return new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime();
-  });
-  return { ...response, notes: sortedNotes };
+  try {
+    const response = await notesApi.getAllNotes(filters);
+    // Sort: pinned notes first, then by updated date
+    const sortedNotes = response.notes.sort((a, b) => {
+      if (a.isPinned && !b.isPinned) return -1;
+      if (!a.isPinned && b.isPinned) return 1;
+      return new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime();
+    });
+    return { ...response, notes: sortedNotes };
+  } catch (error) {
+    console.error('Failed to fetch notes:', error);
+    // Return empty data on error to prevent app crash
+    return { notes: [], folders: [], total: 0 };
+  }
 };
 
 const fetchFolders = async () => {
-  const response = await notesApi.getAllNotes();
-  return response.folders || [];
+  try {
+    const response = await foldersApi.getAllFolders();
+    return response;
+  } catch (error) {
+    console.error('Failed to fetch folders:', error);
+    return [];
+  }
 };
 
 // Hook for notes management

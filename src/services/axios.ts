@@ -32,6 +32,8 @@ api.interceptors.response.use(
 		// Handle token expiration
 		if (error.response?.status === 401) {
 			localStorage.removeItem("zenwhisper_token");
+			localStorage.removeItem("zenwhisper_user");
+			// Clear all auth data and redirect to login
 			window.location.href = "/login";
 		}
 

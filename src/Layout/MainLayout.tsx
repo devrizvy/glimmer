@@ -1,4 +1,4 @@
-import { Outlet } from "react-router-dom";
+import { Outlet, Navigate } from "react-router-dom";
 import { AppSidebar } from "@/components/app-sidebar";
 import {
 	SidebarTrigger,
@@ -8,9 +8,28 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Search, Plus, MoreVertical, Moon, Sun, Bell } from "lucide-react";
 import { useTheme } from "@/contexts/ThemeContext";
+import { useAuth } from "@/contexts/AuthContext";
 
 export default function Layout() {
 	const { theme, toggleTheme } = useTheme();
+	const { isAuthenticated, isLoading } = useAuth();
+
+	// Show loading screen while checking authentication
+	if (isLoading) {
+		return (
+			<div className="min-h-screen mira-content flex items-center justify-center">
+				<div className="text-center">
+					<div className="w-16 h-16 border-4 border-primary/30 border-t-primary rounded-full animate-spin mx-auto"></div>
+					<p className="mt-4 text-muted-foreground">Loading...</p>
+				</div>
+			</div>
+		);
+	}
+
+	// Redirect to login if not authenticated
+	if (!isAuthenticated) {
+		return <Navigate to="/login" replace />;
+	}
 
 	return (
 		<>
