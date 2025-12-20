@@ -1,11 +1,9 @@
 import { useQuery } from "@tanstack/react-query";
-import axios from "axios";
+import { messagesApi } from "../services/apiService";
 
 const fetchRoomMessages = (roomId: string) => {
-	// Return the promise so React Query can handle it
-	return axios
-		.get(`${import.meta.env.VITE_BACKEND_URL}/room/${roomId}`)
-		.then((res) => res.data);
+	// Use the messages API to get room messages
+	return messagesApi.getRoomMessages(roomId).then(res => res.data);
 };
 
 const useRoomMessages = (roomId: string) => {

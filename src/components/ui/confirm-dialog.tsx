@@ -66,7 +66,7 @@ export const ConfirmDialog: React.FC<ConfirmDialogProps> = ({
             onClick={handleConfirm}
             disabled={isLoading}
             variant={variant === 'destructive' ? 'destructive' : 'default'}
-            className={variant !== 'destructive' ? "bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 text-white transition-all" : undefined}
+            className={variant !== 'destructive' ? "bg-gradient-to-r from-teal-500 to-teal-600 hover:from-teal-600 hover:to-teal-700 text-white transition-all" : undefined}
           >
             {isLoading ? (
               <>

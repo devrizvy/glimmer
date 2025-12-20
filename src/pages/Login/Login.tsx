@@ -5,11 +5,10 @@ import { useNavigate, NavLink } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
-import api from "../../services/axios";
 import toast from "react-hot-toast";
 
 const Login: React.FC = () => {
-	const { loginWithToken, isAuthenticated } = useAuth();
+	const { login, isAuthenticated, user } = useAuth();
 	const navigate = useNavigate();
 	const [showPassword, setShowPassword] = useState(false);
 	const [isLoading, setIsLoading] = useState(false);
@@ -24,7 +23,7 @@ const Login: React.FC = () => {
 		if (isAuthenticated) {
 			navigate("/chat");
 		}
-	}, [isAuthenticated, navigate]);
+	}, [isAuthenticated, navigate, user]);
 
 	const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
 		const { name, value } = e.target;
@@ -47,22 +46,12 @@ const Login: React.FC = () => {
 		setError(null);
 
 		try {
-			// Call your backend login endpoint
-			const response = await api.post("/auth/login", {
-				email: formData.email,
-				password: formData.password,
-			});
-
-			const data = response.data;
-
-			// Store token in localStorage (you might want to use httpOnly cookies in production)
-			localStorage.setItem("zenwhisper_token", data.token);
-
-			// Update auth context with token
-			loginWithToken(data.userInfo, data.token);
-
-			toast.success(`Welcome back, ${data.userInfo.username}!`);
-			navigate("/chat");
+			// Use the new login method from auth context
+			const success = await login(formData.email, formData.password);
+			if (success) {
+				toast.success("Login successful!");
+				navigate("/chat");
+			}
 		} catch (err: any) {
 			const errorMessage = err.response?.data?.message || "Connection error. Please try again.";
 			setError(errorMessage);

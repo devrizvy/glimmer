@@ -153,7 +153,7 @@ export const FolderList: React.FC<FolderListProps> = ({
           "w-full flex items-center justify-between px-3 py-2 text-sm rounded-lg transition-all duration-200",
           "hover:bg-white/10 dark:hover:bg-white/5",
           selectedFolder === null
-            ? "bg-gradient-to-r from-blue-500/10 to-purple-500/10 text-blue-700 dark:text-blue-300 border border-blue-200/20 dark:border-blue-800/20"
+            ? "bg-gradient-to-r from-teal-500/10 to-teal-600/10 text-teal-700 dark:text-teal-300 border border-teal-200/20 dark:border-teal-800/20"
             : "text-gray-700 dark:text-gray-300"
         )}
       >

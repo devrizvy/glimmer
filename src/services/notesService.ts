@@ -41,25 +41,25 @@ export const notesApi = {
     offset?: number;
   }): Promise<NotesResponse> => {
     const response = await api.get(NOTES_ENDPOINTS.getAll, { params });
-    return response.data;
+    return response.data.data; // Extract data from backend response format
   },
 
   // Get single note by ID
   getNote: async (id: string): Promise<Note> => {
     const response = await api.get(NOTES_ENDPOINTS.get(id));
-    return response.data;
+    return response.data.data; // Extract data from backend response format
   },
 
   // Create new note
   createNote: async (noteData: CreateNoteRequest): Promise<Note> => {
     const response = await api.post(NOTES_ENDPOINTS.create, noteData);
-    return response.data;
+    return response.data.data; // Extract data from backend response format
   },
 
   // Update existing note
   updateNote: async (id: string, noteData: UpdateNoteRequest): Promise<Note> => {
     const response = await api.put(NOTES_ENDPOINTS.update(id), noteData);
-    return response.data;
+    return response.data.data; // Extract data from backend response format
   },
 
   // Delete note
@@ -70,19 +70,19 @@ export const notesApi = {
   // Toggle pin status
   togglePinNote: async (id: string): Promise<Note> => {
     const response = await api.post(NOTES_ENDPOINTS.pinNote(id));
-    return response.data;
+    return response.data.data; // Extract data from backend response format
   },
 
   // Toggle archive status
   toggleArchiveNote: async (id: string): Promise<Note> => {
     const response = await api.post(NOTES_ENDPOINTS.archiveNote(id));
-    return response.data;
+    return response.data.data; // Extract data from backend response format
   },
 
   // Search notes
   searchNotes: async (query: string): Promise<NotesResponse> => {
     const response = await api.get(NOTES_ENDPOINTS.search, { params: { q: query } });
-    return response.data;
+    return response.data.data; // Extract data from backend response format
   },
 };
 
@@ -91,19 +91,19 @@ export const foldersApi = {
   // Get all folders
   getAllFolders: async (): Promise<Folder[]> => {
     const response = await api.get(NOTES_ENDPOINTS.getAllFolders);
-    return response.data;
+    return response.data.data; // Extract data from backend response format
   },
 
   // Create new folder
   createFolder: async (folderData: CreateFolderRequest): Promise<Folder> => {
     const response = await api.post(NOTES_ENDPOINTS.createFolder, folderData);
-    return response.data;
+    return response.data.data; // Extract data from backend response format
   },
 
   // Update folder
   updateFolder: async (id: string, folderData: Partial<CreateFolderRequest>): Promise<Folder> => {
     const response = await api.put(NOTES_ENDPOINTS.updateFolder(id), folderData);
-    return response.data;
+    return response.data.data; // Extract data from backend response format
   },
 
   // Delete folder

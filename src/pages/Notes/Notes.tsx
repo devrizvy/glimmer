@@ -154,7 +154,7 @@ const Notes: React.FC = () => {
         <div className="space-y-6">
           {/* Quick Stats */}
           <div className="text-center">
-            <div className="text-3xl font-bold bg-gradient-to-r from-blue-500 to-purple-500 bg-clip-text text-transparent">
+            <div className="text-3xl font-bold bg-gradient-to-r from-teal-500 to-teal-600 bg-clip-text text-transparent">
               {displayNotes.length}
             </div>
             <div className="text-sm text-gray-500 dark:text-gray-400">
@@ -197,7 +197,7 @@ const Notes: React.FC = () => {
         <div className="p-6 border-b border-white/10 dark:border-white/5">
           <div className="flex items-center justify-between mb-4">
             <div className="flex items-center gap-3">
-              <div className="p-2 bg-gradient-to-br from-blue-500 to-purple-500 rounded-xl">
+              <div className="p-2 bg-gradient-to-br from-teal-500 to-teal-600 rounded-xl">
                 <FileText className="w-6 h-6 text-white" />
               </div>
               <div>
@@ -211,7 +211,7 @@ const Notes: React.FC = () => {
             </div>
             <Button
               onClick={handleCreateNote}
-              className="bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 text-white"
+              className="bg-gradient-to-r from-teal-500 to-teal-600 hover:from-teal-600 hover:to-teal-700 text-white"
             >
               <Plus className="w-4 h-4 mr-2" />
               New Note
@@ -265,8 +265,8 @@ const Notes: React.FC = () => {
             </div>
           ) : displayNotes.length === 0 ? (
             <div className="flex flex-col items-center justify-center h-full text-center">
-              <div className="w-20 h-20 bg-gradient-to-br from-blue-500/10 to-purple-500/10 rounded-2xl flex items-center justify-center mb-4">
-                <FileText className="w-10 h-10 text-blue-500 dark:text-blue-400" />
+              <div className="w-20 h-20 bg-gradient-to-br from-teal-500/10 to-teal-600/10 rounded-2xl flex items-center justify-center mb-4">
+                <FileText className="w-10 h-10 text-teal-500 dark:text-teal-400" />
               </div>
               <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-1">
                 No notes yet

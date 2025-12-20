@@ -2,10 +2,9 @@ import { useEffect, useState, useRef } from "react";
 import { ArrowLeft, Send, Users, LogOut, Settings, Zap } from "lucide-react";
 import { useNavigate, useParams } from "react-router-dom";
 import { useLocation } from "react-router-dom";
-import { io } from "socket.io-client";
 import { useAuth } from "../../contexts/AuthContext";
+import { useSocketChat } from "../../hooks/useSocketChat";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import useRoomMessages from "../../hooks/useRoomMessages";
 import toast from "react-hot-toast";
 
@@ -27,12 +26,24 @@ const RoomChat = () => {
 	const location = useLocation();
 	const { user, isAuthenticated } = useAuth();
 	const username = user?.username || "";
+	const userEmail = user?.email || "";
 
-	const [socket, setSocket] = useState<any>(null);
 	const [message, setMessage] = useState("");
-	const [onlineUsers, setOnlineUsers] = useState<string[]>([]);
-	const [isConnected, setIsConnected] = useState(false);
 	const messagesEndRef = useRef<HTMLDivElement>(null);
+
+	// Use useSocketChat hook for socket functionality
+	const {
+		isConnected,
+		roomMessages,
+		sendRoomMessage,
+		joinRoom,
+		leaveRoom: socketLeaveRoom,
+		getMessagesForRoom,
+	} = useSocketChat({
+		userEmail,
+		username,
+		autoConnect: true,
+	});
 
 	// Use useRoomMessages hook for initial message loading
 	const { isPending, messages: initialMessages, isError, error } = useRoomMessages(id || "");
@@ -53,108 +64,31 @@ const RoomChat = () => {
 		scrollToBottom();
 	}, [messages]);
 
-	// Socket connection setup
+	// Join room when connected and room info is available
 	useEffect(() => {
-		if (!id || !username || !isAuthenticated) {
-			navigate("/group");
-			return;
-		}
-
-		const newSocket = io(`${import.meta.env.VITE_BACKEND_URL}`);
-		setSocket(newSocket);
-
-		newSocket.on("connect", () => {
-			setIsConnected(true);
+		if (isConnected && id && username) {
+			console.log("Joining room:", id, "as:", username);
+			joinRoom(id);
 			toast.success(`Connected to ${roomName}`);
-			// Join the room
-			newSocket.emit("join_room", id, username);
-		});
+		}
+	}, [isConnected, id, username, roomName, joinRoom]);
 
-		newSocket.on("disconnect", () => {
-			setIsConnected(false);
-			toast.error("Connection lost. Trying to reconnect...");
-		});
-
-		// Listen for room messages
-		const handleRoomMessage = (data: any) => {
-			const newMessage: RoomMessage = {
-				id: Date.now().toString(),
-				roomId: data.roomId,
-				room: data.room,
-				author: data.author,
-				message: data.message,
-				time: data.time,
-				isOwn: data.author === username,
-				createdAt: new Date(),
-			};
-
-			setMessages((prev) => [...prev, newMessage]);
-		};
-
-		// Listen for system messages (user joined/left)
-		const handleSystemMessage = (data: any) => {
-			const systemMessage: RoomMessage = {
-				id: Date.now().toString(),
-				roomId: id,
-				room: roomName,
-				author: "System",
-				message: data.message,
-				time: data.time,
-				isSystem: true,
-				createdAt: new Date(),
-			};
-
-			setMessages((prev) => [...prev, systemMessage]);
-		};
-
-		// Listen for online users updates
-		const handleUsersUpdate = (users: string[]) => {
-			setOnlineUsers(users);
-		};
-
-		newSocket.on("receive_room_message", handleRoomMessage);
-		newSocket.on("joining_message", handleSystemMessage);
-		newSocket.on("leave_message", handleSystemMessage);
-		newSocket.on("room_users_update", handleUsersUpdate);
-
-		// Cleanup
-		return () => {
-			newSocket.off("receive_room_message", handleRoomMessage);
-			newSocket.off("joining_message", handleSystemMessage);
-			newSocket.off("leave_message", handleSystemMessage);
-			newSocket.off("room_users_update", handleUsersUpdate);
-			if (id) {
-				newSocket.emit("leave_room", id, username);
-			}
-			newSocket.disconnect();
-		};
-	}, [id, username, roomName, isAuthenticated, navigate]);
-
-	// Helper function to format time in 12-hour format with AM/PM
-	const formatTime12Hour = (date: Date) => {
-		return date.toLocaleTimeString([], {
-			hour: 'numeric',
-			minute: '2-digit',
-			hour12: true
-		});
-	};
-
-	// Update messages when initialMessages are loaded
+	// Update messages when initialMessages are loaded (this runs once)
 	useEffect(() => {
 		if (initialMessages && initialMessages.length > 0) {
 			const formattedMessages: RoomMessage[] = initialMessages.map((msg: any) => ({
 				id: msg._id || Date.now().toString(),
 				roomId: msg.roomId || id || "",
-				room: msg.room || roomName,
+				room: roomName,
 				author: msg.author || "Unknown",
 				message: msg.message || "",
-				time: msg.time || formatTime12Hour(new Date(msg.createdAt)),
+				time: formatTime12Hour(new Date(msg.createdAt)),
 				isOwn: msg.author === username,
-				isSystem: msg.author === "System",
+				isSystem: false,
 				createdAt: new Date(msg.createdAt),
 			}));
 			setMessages(formattedMessages);
-		} else {
+		} else if (!isPending && !isError) {
 			// Add welcome message if no messages exist
 			const welcomeMessage: RoomMessage = {
 				id: Date.now().toString(),
@@ -168,29 +102,66 @@ const RoomChat = () => {
 			};
 			setMessages([welcomeMessage]);
 		}
-	}, [initialMessages, id, roomName, username]);
+	}, [initialMessages, id, roomName, username, user?.email, isPending, isError]);
 
+	// Add new socket messages to existing messages
+	useEffect(() => {
+		const socketMessages = getMessagesForRoom(id || "");
+		// Only process if we have new socket messages that aren't already in our state
+		if (socketMessages.length > 0) {
+			setMessages((prevMessages) => {
+				const existingMessageIds = new Set(prevMessages.map(msg => msg.id));
+				const newMessages = socketMessages
+					.filter(msg => !existingMessageIds.has(msg.id))
+					.map((msg) => ({
+						id: msg.id,
+						roomId: msg.roomId,
+						room: roomName,
+						author: msg.author,
+						message: msg.message,
+						time: msg.time,
+						isOwn: msg.isOwn || msg.author === username,
+						isSystem: msg.isSystem,
+						createdAt: msg.createdAt,
+					}));
+
+				return [...prevMessages, ...newMessages];
+			});
+		}
+	}, [roomMessages, id, roomName, username, getMessagesForRoom]);
+
+	// Helper function to format time in 12-hour format with AM/PM
+	const formatTime12Hour = (date: Date) => {
+		return date.toLocaleTimeString([], {
+			hour: 'numeric',
+			minute: '2-digit',
+			hour12: true
+		});
+	};
+
+	
 	const handleSendMessage = (e: React.FormEvent) => {
 		e.preventDefault();
 
-		if (message.trim() && socket && id) {
-			const messageData = {
+		if (message.trim() && id) {
+			console.log("Sending room message:", message.trim());
+			console.log("Socket connected:", isConnected);
+
+			// Send message via socket service
+			sendRoomMessage({
 				roomId: id,
 				room: roomName,
-				author: username,
 				message: message.trim(),
-				time: formatTime12Hour(new Date()),
-			};
-
-			// Send message via socket - the server will echo it back to all clients
-			socket.emit("send_room_message", messageData);
+			});
 			setMessage("");
+		} else {
+			console.log("Cannot send message - missing data:", { message: message.trim(), id, isConnected });
 		}
 	};
 
 	const leaveRoom = () => {
-		if (socket && id) {
-			socket.emit("leave_room", id, username);
+		if (id) {
+			socketLeaveRoom(id);
 		}
 		localStorage.removeItem("currentRoom");
 		localStorage.removeItem("currentRoomName");
@@ -233,11 +204,10 @@ const RoomChat = () => {
 										{roomName}
 									</h2>
 									<p className="text-sm text-foreground/60 flex items-center gap-2">
-										<div className="relative flex h-2 w-2">
-											<div className="absolute inline-flex h-full w-full rounded-full bg-primary"></div>
+										<div className={`relative flex h-2 w-2 ${isConnected ? "bg-green-500 animate-pulse" : "bg-destructive"}`}>
+											<div className="absolute inline-flex h-full w-full rounded-full bg-current"></div>
 										</div>
-										{onlineUsers.length}{" "}
-										{onlineUsers.length === 1 ? "student" : "students"} online
+										{isConnected ? "Connected" : "Connecting..."}
 									</p>
 								</div>
 							</div>
@@ -372,83 +342,108 @@ const RoomChat = () => {
 				)}
 			</div>
 
-			{/* Online Students Bar */}
-			{onlineUsers.length > 0 && (
-				<div className="mira-glass border-t border-sidebar-border px-6 py-4">
-					<div className="container mx-auto">
-						<div className="flex items-center gap-4 overflow-x-auto">
-							<div className="flex items-center gap-2 text-sm font-medium text-foreground/80 whitespace-nowrap">
-								<div className="w-3 h-3 bg-green-500 rounded-full animate-pulse"></div>
-								<span>{onlineUsers.length} {onlineUsers.length === 1 ? "Student" : "Students"} Online</span>
-							</div>
-							<div className="flex gap-2 flex-wrap">
-								{onlineUsers.map((user, idx) => (
-									<div
-										key={idx}
-										className={`flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium transition-all hover:scale-105 ${
-											user === username
-												? "bg-primary/10 text-primary border border-primary/30 shadow-sm"
-												: "mira-glass text-foreground/80 border border-border/50"
-										}`}
-									>
-										<div className={`w-2.5 h-2.5 rounded-full ${
-											user === username ? "bg-primary" : "bg-green-500 animate-pulse"
-										}`}></div>
-										<span className="font-medium">{user === username ? "You" : user}</span>
-									</div>
-								))}
-							</div>
-						</div>
-					</div>
-				</div>
-			)}
-
+			
 			{/* Input Section */}
-			<div className="mira-glass border-t border-sidebar-border">
-				<div className="container mx-auto p-6">
-					<div className="flex items-center gap-3 mb-4">
-						<div
-							className={`w-3 h-3 rounded-full ${isConnected ? "bg-green-500" : "bg-destructive"} ${isConnected ? "animate-pulse" : ""}`}
-						></div>
-						<span className="text-sm font-medium text-foreground/80">
-							{isConnected ? `📚 Connected to ${roomName}` : "🔄 Connecting to classroom..."}
-						</span>
+			<div className="mira-glass border-t border-sidebar-border bg-gradient-to-b from-background/95 to-background/80">
+				<div className="container mx-auto p-4">
+					{/* Connection Status */}
+					<div className="flex items-center justify-between mb-3">
+						<div className="flex items-center gap-2">
+							<div
+								className={`w-2 h-2 rounded-full ${isConnected ? "bg-green-500" : "bg-destructive"} ${isConnected ? "animate-pulse" : ""}`}
+							></div>
+							<span className="text-xs text-muted-foreground">
+								{isConnected ? `📚 Connected to ${roomName}` : "🔄 Connecting..."}
+							</span>
+						</div>
+						<div className="text-xs text-muted-foreground">
+							{message.length}/500 characters
+						</div>
 					</div>
 
-					<form onSubmit={handleSendMessage} className="flex items-end gap-4">
-						<div className="flex-1 relative">
-							<Input
-								type="text"
-								value={message}
-								onChange={(e) => setMessage(e.target.value)}
-								placeholder={`Share your thoughts in ${roomName} classroom...`}
-								className="mira-search pr-12 h-12 text-base"
-							/>
-							<div className="absolute right-3 top-1/2 transform -translate-y-1/2">
-								<span className="text-xs text-foreground/40">
-									{message.length}/500
-								</span>
+					<form onSubmit={handleSendMessage} className="space-y-3">
+						<div className="flex items-end gap-2">
+							{/* Action Buttons */}
+							<div className="flex items-center gap-1">
+								<Button
+									type="button"
+									variant="ghost"
+									size="sm"
+									className="h-10 w-10 rounded-xl text-muted-foreground hover:text-foreground hover:bg-accent transition-all"
+								>
+									<svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+										<path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14.828 14.828a4 4 0 01-5.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+									</svg>
+								</Button>
+								<Button
+									type="button"
+									variant="ghost"
+									size="sm"
+									className="h-10 w-10 rounded-xl text-muted-foreground hover:text-foreground hover:bg-accent transition-all"
+								>
+									<svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+										<path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13" />
+									</svg>
+								</Button>
 							</div>
-						</div>
 
-						<Button
-							type="submit"
-							disabled={!message.trim() || !isConnected}
-							className="px-6 h-12 mira-action-btn text-primary-foreground rounded-xl font-medium disabled:opacity-50 disabled:cursor-not-allowed transition-all flex items-center gap-2 text-base shadow-lg hover:shadow-xl"
-							style={{
-								background: "oklch(0.55 0.08 145)",
-								boxShadow: "0 4px 20px oklch(0.55 0.08 145 / 0.3)",
-							}}
-						>
-							<Send size={18} />
-							<span>{message.trim() ? "Send Message" : "Send"}</span>
-						</Button>
+							{/* Message Input */}
+							<div className="flex-1 relative">
+								<textarea
+									value={message}
+									onChange={(e) => {
+										if (e.target.value.length <= 500) {
+											setMessage(e.target.value);
+										}
+									}}
+									placeholder={`Share your thoughts in ${roomName} classroom...`}
+									className="w-full min-h-[44px] max-h-32 px-4 py-3 pr-12 rounded-xl resize-none mira-glass border border-border/50 focus:border-primary/50 focus:ring-2 focus:ring-primary/10 text-base placeholder:text-muted-foreground/60 transition-all"
+									rows={1}
+									onKeyDown={(e) => {
+										if (e.key === 'Enter' && !e.shiftKey) {
+											e.preventDefault();
+											handleSendMessage(e);
+										}
+									}}
+									style={{
+										height: 'auto',
+										minHeight: '44px'
+									}}
+									onInput={(e) => {
+										const target = e.target as HTMLTextAreaElement;
+										target.style.height = 'auto';
+										target.style.height = Math.min(target.scrollHeight, 128) + 'px';
+									}}
+								/>
+								{message.length > 300 && (
+									<div className="absolute right-3 bottom-2">
+										<div className={`text-xs font-medium ${message.length >= 500 ? 'text-destructive' : 'text-muted-foreground'}`}>
+											{500 - message.length}
+										</div>
+									</div>
+								)}
+							</div>
+
+							{/* Send Button */}
+							<Button
+								type="submit"
+								disabled={!message.trim() || !isConnected || message.length >= 500}
+								className="h-10 px-4 bg-gradient-to-r from-primary to-primary/90 hover:from-primary/90 hover:to-primary text-primary-foreground rounded-xl font-medium disabled:opacity-50 disabled:cursor-not-allowed transition-all flex items-center gap-2 shadow-sm hover:shadow-md hover:scale-105 active:scale-100"
+							>
+								<Send size={16} className="transition-transform group-hover:translate-x-0.5" />
+								{message.trim() && <span className="hidden sm:inline">Send</span>}
+							</Button>
+						</div>
 					</form>
 
-					<div className="mt-3 text-center">
-						<span className="text-xs text-foreground/50 font-medium">
-							💡 Be respectful and constructive in your educational discussions
+					{/* Help Text */}
+					<div className="mt-2 flex items-center justify-between">
+						<span className="text-xs text-muted-foreground">
+							💡 Press Enter to send, Shift+Enter for new line
 						</span>
+						<div className="flex items-center gap-3 text-xs text-muted-foreground">
+							<span>Be respectful and constructive</span>
+						</div>
 					</div>
 				</div>
 			</div>

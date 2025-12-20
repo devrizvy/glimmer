@@ -5,7 +5,6 @@ import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { useAuth } from "../../contexts/AuthContext";
 import { usePrivateMessages } from "../../hooks/usePrivateMessages";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import toast from "react-hot-toast";
 
 interface Message {
@@ -491,54 +490,119 @@ const ChatFeed = () => {
 				</div>
 
 				{/* Message Input */}
-				<div className="mira-glass border-t border-sidebar-border">
-					<div className="container mx-auto p-6">
-						<div className="flex items-center gap-3 mb-4">
-							<div
-								className={`w-3 h-3 rounded-full ${isConnected ? "bg-green-500" : "bg-destructive"} ${isConnected ? "animate-pulse" : ""}`}
-							></div>
-							<span className="text-sm font-medium text-foreground/80">
-								{isConnected ? `💬 Connected to ${partnerUsername}` : "🔄 Connecting to chat..."}
-							</span>
+				<div className="mira-glass border-t border-sidebar-border bg-gradient-to-b from-background/95 to-background/80">
+					<div className="container mx-auto p-4">
+						{/* Connection Status */}
+						<div className="flex items-center justify-between mb-3">
+							<div className="flex items-center gap-2">
+								<div
+									className={`w-2 h-2 rounded-full ${isConnected ? "bg-green-500" : "bg-destructive"} ${isConnected ? "animate-pulse" : ""}`}
+								></div>
+								<span className="text-xs text-muted-foreground">
+									{isConnected ? `💬 Chat with ${partnerUsername}` : "🔄 Connecting..."}
+								</span>
+							</div>
+							<div className="text-xs text-muted-foreground">
+								{currentMessage.length}/500 characters
+							</div>
 						</div>
 
-						<form onSubmit={handleOnSubmit} className="flex items-end gap-4">
-							<div className="flex-1 relative">
-								<Input
-									type="text"
-									value={currentMessage}
-									onChange={(e) => {
-										setCurrentMessage(e.target.value);
-										handleTyping();
-									}}
-									placeholder={`Share your thoughts with ${partnerUsername}...`}
-									className="mira-search pr-12 h-12 text-base"
-								/>
-								<div className="absolute right-3 top-1/2 transform -translate-y-1/2">
-									<span className="text-xs text-foreground/40">
-										{currentMessage.length}/500
-									</span>
+						<form onSubmit={handleOnSubmit} className="space-y-3">
+							<div className="flex items-end gap-2">
+								{/* Action Buttons */}
+								<div className="flex items-center gap-1">
+									<Button
+										type="button"
+										variant="ghost"
+										size="sm"
+										className="h-10 w-10 rounded-xl text-muted-foreground hover:text-foreground hover:bg-accent transition-all"
+									>
+										<svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+											<path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14.828 14.828a4 4 0 01-5.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+										</svg>
+									</Button>
+									<Button
+										type="button"
+										variant="ghost"
+										size="sm"
+										className="h-10 w-10 rounded-xl text-muted-foreground hover:text-foreground hover:bg-accent transition-all"
+									>
+										<svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+											<path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13" />
+										</svg>
+									</Button>
 								</div>
-							</div>
 
-							<Button
-								type="submit"
-								disabled={!currentMessage.trim() || !isConnected}
-								className="px-6 h-12 mira-action-btn text-primary-foreground rounded-xl font-medium disabled:opacity-50 disabled:cursor-not-allowed transition-all flex items-center gap-2 text-base shadow-lg hover:shadow-xl"
-								style={{
-									background: "oklch(0.55 0.08 145)",
-									boxShadow: "0 4px 20px oklch(0.55 0.08 145 / 0.3)",
-								}}
-							>
-								<Send size={18} />
-								<span>{currentMessage.trim() ? "Send Message" : "Send"}</span>
-							</Button>
+								{/* Message Input */}
+								<div className="flex-1 relative">
+									<textarea
+										value={currentMessage}
+										onChange={(e) => {
+											if (e.target.value.length <= 500) {
+												setCurrentMessage(e.target.value);
+												handleTyping();
+											}
+										}}
+										placeholder={`Message ${partnerUsername}...`}
+										className="w-full min-h-[44px] max-h-32 px-4 py-3 pr-12 rounded-xl resize-none mira-glass border border-border/50 focus:border-primary/50 focus:ring-2 focus:ring-primary/10 text-base placeholder:text-muted-foreground/60 transition-all"
+										rows={1}
+										onKeyDown={(e) => {
+											if (e.key === 'Enter' && !e.shiftKey) {
+												e.preventDefault();
+												handleOnSubmit(e);
+											}
+										}}
+										style={{
+											height: 'auto',
+											minHeight: '44px'
+										}}
+										onInput={(e) => {
+											const target = e.target as HTMLTextAreaElement;
+											target.style.height = 'auto';
+											target.style.height = Math.min(target.scrollHeight, 128) + 'px';
+										}}
+									/>
+									{currentMessage.length > 300 && (
+										<div className="absolute right-3 bottom-2">
+											<div className={`text-xs font-medium ${currentMessage.length >= 500 ? 'text-destructive' : 'text-muted-foreground'}`}>
+												{500 - currentMessage.length}
+											</div>
+										</div>
+									)}
+								</div>
+
+								{/* Send Button */}
+								<Button
+									type="submit"
+									disabled={!currentMessage.trim() || !isConnected || currentMessage.length >= 500}
+									className="h-10 px-4 bg-gradient-to-r from-primary to-primary/90 hover:from-primary/90 hover:to-primary text-primary-foreground rounded-xl font-medium disabled:opacity-50 disabled:cursor-not-allowed transition-all flex items-center gap-2 shadow-sm hover:shadow-md hover:scale-105 active:scale-100"
+								>
+									<Send size={16} className="transition-transform group-hover:translate-x-0.5" />
+									{currentMessage.trim() && <span className="hidden sm:inline">Send</span>}
+								</Button>
+							</div>
 						</form>
 
-						<div className="mt-3 text-center">
-							<span className="text-xs text-foreground/50 font-medium">
-								💡 Be thoughtful and respectful in your conversations
+						{/* Typing Indicator */}
+						{isTyping && (
+							<div className="mt-2 flex items-center gap-2 text-xs text-muted-foreground animate-pulse">
+								<div className="flex space-x-1">
+									<div className="w-1.5 h-1.5 rounded-full bg-primary animate-bounce"></div>
+									<div className="w-1.5 h-1.5 rounded-full bg-primary animate-bounce" style={{ animationDelay: '0.1s' }}></div>
+									<div className="w-1.5 h-1.5 rounded-full bg-primary animate-bounce" style={{ animationDelay: '0.2s' }}></div>
+								</div>
+								<span>{partnerUsername} is typing</span>
+							</div>
+						)}
+
+						{/* Help Text */}
+						<div className="mt-2 flex items-center justify-between">
+							<span className="text-xs text-muted-foreground">
+								💡 Press Enter to send, Shift+Enter for new line
 							</span>
+							<div className="flex items-center gap-3 text-xs text-muted-foreground">
+								<span>Be thoughtful and respectful</span>
+							</div>
 						</div>
 					</div>
 				</div>

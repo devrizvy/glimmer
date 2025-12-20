@@ -8,6 +8,15 @@ interface ApiResponse<T> {
 	error?: string;
 }
 
+interface AuthResponse {
+	token: string;
+	userInfo: {
+		email: string;
+		username: string;
+		name?: string;
+	};
+}
+
 // Backend message types (matching your MongoDB schema)
 export interface BackendPrivateMessage {
 	_id: string;
@@ -93,29 +102,22 @@ const apiRequest = async <T>(
 // Authentication API
 export const authApi = {
 	login: async (email: string, password: string) => {
-		return apiRequest("/auth/login", {
+		return apiRequest<AuthResponse>("/login", {
 			method: "POST",
 			body: JSON.stringify({ email, password }),
 		});
 	},
 
 	signup: async (username: string, email: string, password: string) => {
-		return apiRequest("/auth/signup", {
+		return apiRequest("/signup", {
 			method: "POST",
 			body: JSON.stringify({ username, email, password }),
 		});
 	},
 
-	logout: async (email: string) => {
-		return apiRequest("/auth/logout", {
-			method: "POST",
-			body: JSON.stringify({ email }),
-		});
-	},
-
 	// Get all users (for testing/debugging)
 	getUsers: async () => {
-		return apiRequest("/auth/users");
+		return apiRequest<any[]>("/users");
 	},
 };
 
@@ -123,17 +125,17 @@ export const authApi = {
 export const messagesApi = {
 	// Get room messages for a specific room
 	getRoomMessages: async (roomId: string) => {
-		return apiRequest(`/messages/room/${roomId}`);
+		return apiRequest<BackendRoomMessage[]>(`/room/${roomId}`);
 	},
 
 	// Get private messages for a specific chat
 	getPrivateMessages: async (chatId: string) => {
-		return apiRequest(`/messages/private-chat/${chatId}`);
+		return apiRequest<BackendPrivateMessage[]>(`/private-chat/${chatId}`);
 	},
 
 	// Get all chats for a specific user
 	getUserChats: async (userEmail: string) => {
-		return apiRequest(`/messages/user-chats/${userEmail}`);
+		return apiRequest<BackendChat[]>(`/user-chats/${userEmail}`);
 	},
 };
 

@@ -41,7 +41,7 @@ const MarkdownPreview: React.FC<MarkdownPreviewProps> = ({ content, className })
     html = html.replace(/\[([^\]]+)\]\(([^)]+)\)/g, (_match, text, url) => {
       const isExternal = url.startsWith('http');
       const targetAttr = isExternal ? ' target="_blank" rel="noopener noreferrer"' : '';
-      return `<a href="${url}" class="text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 underline transition-colors"${targetAttr}>${text}</a>`;
+      return `<a href="${url}" class="text-teal-600 dark:text-teal-400 hover:text-teal-800 dark:hover:text-teal-300 underline transition-colors"${targetAttr}>${text}</a>`;
     });
 
     // Horizontal rules
@@ -97,7 +97,7 @@ const MarkdownPreview: React.FC<MarkdownPreviewProps> = ({ content, className })
     html = processedLines.join('\n');
 
     // Blockquotes
-    html = html.replace(/^> (.+)/gm, '<blockquote class="border-l-4 border-blue-500 dark:border-blue-400 pl-4 py-2 mb-3 italic text-gray-700 dark:text-gray-300 bg-blue-50 dark:bg-blue-950/20 rounded-r">$1</blockquote>');
+    html = html.replace(/^> (.+)/gm, '<blockquote class="border-l-4 border-teal-500 dark:border-teal-400 pl-4 py-2 mb-3 italic text-gray-700 dark:text-gray-300 bg-teal-50 dark:bg-teal-950/20 rounded-r">$1</blockquote>');
 
     // Paragraphs and line breaks
     html = html.replace(/\n\n+/g, '</p><p class="mb-4">');
@@ -120,7 +120,7 @@ const MarkdownPreview: React.FC<MarkdownPreviewProps> = ({ content, className })
         "prose-pre:bg-gray-100 dark:prose-pre:bg-gray-800",
         "prose-blockquote:border-gray-300 dark:prose-blockquote:border-gray-600",
         "prose-blockquote:text-gray-700 dark:prose-blockquote:text-gray-300",
-        "prose-a:text-blue-500 dark:prose-a:text-blue-400",
+        "prose-a:text-teal-500 dark:prose-a:text-teal-400",
         "prose-ul:list-disc",
         "animate-in fade-in-0 duration-200",
         className

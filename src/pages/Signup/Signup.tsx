@@ -12,7 +12,7 @@ import { useNavigate, NavLink } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent } from "@/components/ui/card";
-import api from "../../services/axios";
+import { authApi } from "../../services/apiService";
 import toast from "react-hot-toast";
 
 interface ValidationState {
@@ -143,18 +143,23 @@ const Signup: React.FC = () => {
 
 		try {
 			// Call your backend signup endpoint
-			await api.post("/signup", {
-				username: formData.username,
-				email: formData.email,
-				password: formData.password,
-			});
+			const response = await authApi.signup(
+				formData.username,
+				formData.email,
+				formData.password
+			);
 
-			setSuccess("Account created successfully! Redirecting to login...");
+			if (response.success) {
+				setSuccess("Account created successfully! Redirecting to login...");
 
-			// Auto-login after successful signup
-			setTimeout(() => {
-				navigate("/login");
-			}, 2000);
+				// Auto-login after successful signup
+				setTimeout(() => {
+					navigate("/login");
+				}, 2000);
+			} else {
+				setError(response.error || "Signup failed");
+				toast.error(response.error || "Signup failed");
+			}
 		} catch (err: any) {
 			const errorMessage = err.response?.data?.message || "Connection error. Please try again.";
 			setError(errorMessage);

@@ -8,7 +8,7 @@ import { Input } from "@/components/ui/input";
 import toast from "react-hot-toast";
 
 interface ChatUser {
-	_id : string;
+	id?: string;
 	email: string;
 	username: string;
 	lastMessage?: string;
@@ -36,7 +36,7 @@ const ChatList = () => {
 	}, [chats, isPending]);
 
 	// Transform backend chats to frontend format
-	const chatUsers: ChatUser[] = chats.map((chat: any) => ({
+	const chatUsers: ChatUser[] = (Array.isArray(chats) ? chats : []).map((chat: any) => ({
 		email: chat.partnerEmail,
 		username: chat.partnerUsername,
 		lastMessage: chat.lastMessage,

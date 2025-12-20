@@ -84,7 +84,7 @@ export const PromptDialog: React.FC<PromptDialogProps> = ({
             onChange={(e) => setValue(e.target.value)}
             onKeyDown={handleKeyDown}
             placeholder={placeholder}
-            className="bg-white/10 dark:bg-white/5 border-white/20 dark:border-white/10 focus:border-blue-400 dark:focus:border-blue-600"
+            className="bg-white/10 dark:bg-white/5 border-white/20 dark:border-white/10 focus:border-teal-400 dark:focus:border-teal-600"
             autoFocus
             disabled={isLoading}
           />
@@ -101,7 +101,7 @@ export const PromptDialog: React.FC<PromptDialogProps> = ({
           <Button
             onClick={handleConfirm}
             disabled={isLoading || !value.trim()}
-            className="bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 text-white disabled:opacity-50 disabled:cursor-not-allowed"
+            className="bg-gradient-to-r from-teal-500 to-teal-600 hover:from-teal-600 hover:to-teal-700 text-white disabled:opacity-50 disabled:cursor-not-allowed"
           >
             {isLoading ? (
               <>

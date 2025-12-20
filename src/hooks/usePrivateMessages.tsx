@@ -1,9 +1,9 @@
 import { useQuery } from "@tanstack/react-query";
-import api from "../services/axios";
+import { messagesApi } from "../services/apiService";
 
 // Hook for fetching private messages for a specific chat
 const fetchPrivateMessages = async (chatId: string) => {
-	const response = await api.get(`/private-chat/${chatId}`);
+	const response = await messagesApi.getPrivateMessages(chatId);
 	return response.data;
 };
 
@@ -26,7 +26,7 @@ export const usePrivateMessages = (chatId: string) => {
 
 // Hook for fetching all chats for a user
 const fetchUserChats = async (userEmail: string) => {
-	const response = await api.get(`/user-chats/${userEmail}`);
+	const response = await messagesApi.getUserChats(userEmail);
 	return response.data;
 };
 

@@ -39,6 +39,7 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog';
 import { PromptDialog } from '@/components/ui/prompt-dialog';
+import { AISummaryDialog } from '@/components/ai/AISummaryDialog';
 import MarkdownPreview from './MarkdownPreview';
 import { cn } from '@/lib/utils';
 
@@ -90,6 +91,13 @@ export const NoteEditor: React.FC<NoteEditorProps> = ({
     isOpen: false,
     selectedText: '',
     cursorPosition: { start: 0, end: 0 }
+  });
+  const [aiSummaryDialog, setAiSummaryDialog] = useState<{
+    isOpen: boolean;
+    initialText: string;
+  }>({
+    isOpen: false,
+    initialText: '',
   });
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
@@ -248,6 +256,60 @@ export const NoteEditor: React.FC<NoteEditorProps> = ({
     setLinkDialog(prev => ({ ...prev, isOpen: false }));
   };
 
+  const handleSummarizeCurrent = () => {
+    setAiSummaryDialog({
+      isOpen: true,
+      initialText: content || '',
+    });
+  };
+
+  const handleSummarizeSelected = () => {
+    const textarea = textareaRef.current;
+    if (!textarea) return;
+
+    const start = textarea.selectionStart;
+    const end = textarea.selectionEnd;
+    const selectedText = content.substring(start, end);
+
+    if (selectedText.trim()) {
+      setAiSummaryDialog({
+        isOpen: true,
+        initialText: selectedText,
+      });
+    } else {
+      // If no text is selected, summarize entire content
+      handleSummarizeCurrent();
+    }
+  };
+
+  const handleReplaceWithSummary = (summary: string) => {
+    const textarea = textareaRef.current;
+    if (!textarea) return;
+
+    // If there was selected text, replace just that portion
+    if (aiSummaryDialog.initialText !== content) {
+      const start = content.indexOf(aiSummaryDialog.initialText);
+      if (start !== -1) {
+        const end = start + aiSummaryDialog.initialText.length;
+        const newContent = content.substring(0, start) + summary + content.substring(end);
+        setContent(newContent);
+
+        setTimeout(() => {
+          textarea.focus();
+          textarea.setSelectionRange(
+            start + summary.length,
+            start + summary.length
+          );
+        }, 0);
+      }
+    } else {
+      // Replace entire content
+      setContent(summary);
+    }
+
+    setAiSummaryDialog(prev => ({ ...prev, isOpen: false }));
+  };
+
   const insertHeading = (level: 1 | 2 | 3 | 4 | 5 | 6) => {
     const textarea = textareaRef.current;
     if (!textarea) return;
@@ -275,7 +337,7 @@ export const NoteEditor: React.FC<NoteEditorProps> = ({
       <DialogContent className="max-w-4xl max-h-[90vh] overflow-hidden mira-glass border-white/10 dark:border-white/5 backdrop-blur-xl animate-in fade-in-0 zoom-in-95 duration-200">
         <DialogHeader className="border-b border-white/10 dark:border-white/5 pb-4">
           <div className="flex items-center gap-2">
-            <FileText className="w-5 h-5 text-blue-500" />
+            <FileText className="w-5 h-5 text-teal-500" />
             <DialogTitle className="text-xl font-semibold">
               {note ? 'Edit Note' : 'Create New Note'}
             </DialogTitle>
@@ -293,7 +355,7 @@ export const NoteEditor: React.FC<NoteEditorProps> = ({
               value={title}
               onChange={(e) => setTitle(e.target.value)}
               onKeyDown={handleKeyDown}
-              className="text-lg font-semibold bg-white/10 dark:bg-white/5 border-white/20 dark:border-white/10 focus:border-blue-400 dark:focus:border-blue-600"
+              className="text-lg font-semibold bg-white/10 dark:bg-white/5 border-white/20 dark:border-white/10 focus:border-teal-400 dark:focus:border-teal-600"
             />
           </div>
 
@@ -400,6 +462,15 @@ export const NoteEditor: React.FC<NoteEditorProps> = ({
               >
                 <Link className="w-4 h-4" />
               </Button>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={handleSummarizeSelected}
+                className="h-8 px-2 hover:bg-white/10 dark:hover:bg-white/5 transition-colors"
+                title="Summarize Selected Text"
+              >
+                <Sparkles className="w-4 h-4" />
+              </Button>
             </div>
 
             <div className="h-6 w-px bg-white/20 dark:bg-white/10 mx-1" />
@@ -483,7 +554,7 @@ export const NoteEditor: React.FC<NoteEditorProps> = ({
                     value={content}
                     onChange={(e) => setContent(e.target.value)}
                     onKeyDown={handleKeyDown}
-                    className="h-full resize-none bg-white/10 dark:bg-white/5 border-white/20 dark:border-white/10 focus:border-blue-400 dark:focus:border-blue-600 font-serif leading-relaxed text-sm"
+                    className="h-full resize-none bg-white/10 dark:bg-white/5 border-white/20 dark:border-white/10 focus:border-teal-400 dark:focus:border-teal-600 font-serif leading-relaxed text-sm"
                     style={{ minHeight: '300px' }}
                   />
                 </div>
@@ -499,7 +570,7 @@ export const NoteEditor: React.FC<NoteEditorProps> = ({
                 value={content}
                 onChange={(e) => setContent(e.target.value)}
                 onKeyDown={handleKeyDown}
-                className="h-full resize-none bg-white/10 dark:bg-white/5 border-white/20 dark:border-white/10 focus:border-blue-400 dark:focus:border-blue-600 font-serif leading-relaxed"
+                className="h-full resize-none bg-white/10 dark:bg-white/5 border-white/20 dark:border-white/10 focus:border-teal-400 dark:focus:border-teal-600 font-serif leading-relaxed"
                 style={{ minHeight: '300px' }}
               />
             )}
@@ -518,7 +589,7 @@ export const NoteEditor: React.FC<NoteEditorProps> = ({
               )}
             </div>
             {isSaving && (
-              <span className="text-blue-600 dark:text-blue-400">Saving...</span>
+              <span className="text-teal-600 dark:text-teal-400">Saving...</span>
             )}
           </div>
 
@@ -528,13 +599,13 @@ export const NoteEditor: React.FC<NoteEditorProps> = ({
               {tags.map((tag) => (
                 <span
                   key={tag}
-                  className="inline-flex items-center gap-1 px-2 py-1 text-xs font-medium rounded-full bg-gradient-to-r from-purple-500/10 to-pink-500/10 text-purple-700 dark:text-purple-300 border border-purple-200/20 dark:border-purple-800/20"
+                  className="inline-flex items-center gap-1 px-2 py-1 text-xs font-medium rounded-full bg-gradient-to-r from-teal-500/10 to-teal-600/10 text-teal-700 dark:text-teal-300 border border-teal-200/20 dark:border-teal-800/20"
                 >
                   <Tag className="w-3 h-3" />
                   {tag}
                   <button
                     onClick={() => handleRemoveTag(tag)}
-                    className="ml-1 hover:text-purple-900 dark:hover:text-purple-100"
+                    className="ml-1 hover:text-teal-900 dark:hover:text-teal-100"
                   >
                     ×
                   </button>
@@ -592,11 +663,12 @@ export const NoteEditor: React.FC<NoteEditorProps> = ({
               <Button
                 variant="ghost"
                 size="sm"
+                onClick={handleSummarizeCurrent}
                 className="h-7 px-3 text-xs hover:bg-white/10 dark:hover:bg-white/5 transition-colors"
-                title="AI Assist (Coming soon)"
+                title="AI Summarize entire note"
               >
                 <Sparkles className="w-3 h-3 mr-1" />
-                AI Assist
+                AI Summarize
               </Button>
             </div>
             <div className="flex items-center gap-2">
@@ -610,7 +682,7 @@ export const NoteEditor: React.FC<NoteEditorProps> = ({
               <Button
                 onClick={handleSave}
                 disabled={!title.trim() || isSaving}
-                className="bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 text-white transition-all transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
+                className="bg-gradient-to-r from-teal-500 to-teal-600 hover:from-teal-600 hover:to-teal-700 text-white transition-all transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
               >
                 {isSaving ? (
                   <>
@@ -640,6 +712,15 @@ export const NoteEditor: React.FC<NoteEditorProps> = ({
         defaultValue={linkDialog.selectedText}
         confirmText="Insert Link"
         cancelText="Cancel"
+      />
+
+      {/* AI Summary Dialog */}
+      <AISummaryDialog
+        isOpen={aiSummaryDialog.isOpen}
+        onClose={() => setAiSummaryDialog(prev => ({ ...prev, isOpen: false }))}
+        onReplaceWithSummary={handleReplaceWithSummary}
+        initialText={aiSummaryDialog.initialText}
+        title="AI Text Summarizer"
       />
     </Dialog>
   );

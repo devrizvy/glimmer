@@ -120,7 +120,7 @@ export const NoteCard: React.FC<NoteCardProps> = ({
             {note.tags.slice(0, 3).map((tag) => (
               <span
                 key={tag}
-                className="inline-flex items-center gap-0.5 px-2 py-0.5 text-xs font-medium rounded-full bg-gradient-to-r from-purple-500/10 to-pink-500/10 text-purple-700 dark:text-purple-300 border border-purple-200/20 dark:border-purple-800/20"
+                className="inline-flex items-center gap-0.5 px-2 py-0.5 text-xs font-medium rounded-full bg-gradient-to-r from-teal-500/10 to-teal-600/10 text-teal-700 dark:text-teal-300 border border-teal-200/20 dark:border-teal-800/20"
               >
                 <Tag className="w-2.5 h-2.5" />
                 {tag}

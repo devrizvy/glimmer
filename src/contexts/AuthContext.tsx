@@ -1,9 +1,11 @@
 import React, { createContext, useContext, useReducer, useEffect } from "react";
 import toast from "react-hot-toast";
+import { authApi } from "@/services/apiService";
 
 interface User {
 	email: string;
 	username: string;
+	name?: string;
 	role?: string;
 }
 
@@ -64,7 +66,7 @@ interface AuthContextType {
 	isAuthenticated: boolean;
 	isLoading: boolean;
 	token: string | null;
-	login: (email: string, username: string) => void;
+	login: (email: string, password: string) => Promise<boolean>;
 	loginWithToken: (user: User, token: string) => void;
 	logout: () => void;
 	setUser: (user: User) => void;
@@ -109,23 +111,48 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
 		}
 	}, []);
 
-	const login = (email: string, username: string) => {
-		const user = { email, username };
-		// This is for demo purposes - normally you'd get token from backend
-		const token = localStorage.getItem("zenwhisper_token") || "demo-token";
-		localStorage.setItem("zenwhisper_user", JSON.stringify(user));
-		dispatch({
-			type: "LOGIN_SUCCESS",
-			payload: { user, token },
-		});
+	const login = async (email: string, password: string) => {
+		try {
+			const response = await authApi.login(email, password);
+			if (response.success && response.data) {
+				const { token, userInfo } = response.data;
+				const user: User = {
+					email: userInfo.email,
+					username: userInfo.username,
+					name: userInfo.username,
+				};
+
+				localStorage.setItem("zenwhisper_user", JSON.stringify(user));
+				localStorage.setItem("zenwhisper_token", token);
+				dispatch({
+					type: "LOGIN_SUCCESS",
+					payload: { user, token },
+				});
+				return true;
+			} else {
+				toast.error(response.error || "Login failed");
+				return false;
+			}
+		} catch (error) {
+			toast.error("Login failed. Please try again.");
+			return false;
+		}
 	};
 
-	const loginWithToken = (user: User, token: string) => {
-		localStorage.setItem("zenwhisper_user", JSON.stringify(user));
+	const loginWithToken = (user: any, token: string) => {
+		// Map backend user data to frontend User interface
+		const mappedUser: User = {
+			email: user.email,
+			username: user.name || user.username, // Use name from backend, fallback to username
+			name: user.name,
+			role: user.role,
+		};
+
+		localStorage.setItem("zenwhisper_user", JSON.stringify(mappedUser));
 		localStorage.setItem("zenwhisper_token", token);
 		dispatch({
 			type: "LOGIN_SUCCESS",
-			payload: { user, token },
+			payload: { user: mappedUser, token },
 		});
 	};
 

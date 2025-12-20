@@ -15,19 +15,19 @@ const UsersList = () => {
 	const handleUserSelect = (selectedUser: any) => {
 		navigate(`/chat/${selectedUser.email}`, {
 			state: {
-				partnerUsername: selectedUser.username,
+				partnerUsername: selectedUser.username || selectedUser.name || selectedUser.email,
 				partnerEmail: selectedUser.email,
 			},
 		});
 	};
 
 	// Filter out current user from the list
-	const filteredUsers = users.filter((u) => u.email !== user?.email);
+	const filteredUsers = (Array.isArray(users) ? users : []).filter((u) => u.email !== user?.email);
 
 	// Further filter by search query
 	const searchFilteredUsers = filteredUsers.filter(
 		(user) =>
-			user.username.toLowerCase().includes(searchQuery.toLowerCase()) ||
+			(user.username || user.name || "").toLowerCase().includes(searchQuery.toLowerCase()) ||
 			user.email.toLowerCase().includes(searchQuery.toLowerCase()),
 	);
 
@@ -146,7 +146,7 @@ const UsersList = () => {
 													className="text-lg font-semibold"
 													style={{ color: "oklch(0.55 0.08 145)" }}
 												>
-													{user.username.charAt(0).toUpperCase()}
+													{(user.username || user.name || user.email.charAt(0)).charAt(0).toUpperCase()}
 												</span>
 											</div>
 											<div className="absolute bottom-0 right-0 w-4 h-4 bg-primary rounded-full border-2 border-sidebar animate-pulse"></div>
@@ -155,7 +155,7 @@ const UsersList = () => {
 										<div className="flex-1 min-w-0">
 											<div className="flex items-center justify-between mb-1">
 												<h3 className="font-semibold text-foreground truncate">
-													{user.username}
+													{user.username || user.name || user.email}
 												</h3>
 												<span
 													className="text-xs px-3 py-1 rounded-full font-medium"
