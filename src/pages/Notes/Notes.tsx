@@ -15,7 +15,9 @@ import {
   Plus,
   Archive,
   FileText,
-  Sparkles
+  Sparkles,
+  Menu,
+  X,
 } from 'lucide-react';
 
 const Notes: React.FC = () => {
@@ -59,6 +61,7 @@ const Notes: React.FC = () => {
   const [editorOpen, setEditorOpen] = useState(false);
   const [editingNote, setEditingNote] = useState<Note | undefined>();
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
+  const [sidebarOpen, setSidebarOpen] = useState(false);
 
   // Get folder name for display
   const getFolderName = (folderId?: string) => {
@@ -149,9 +152,35 @@ const Notes: React.FC = () => {
 
   return (
     <div className="h-full flex">
+      {/* Mobile Sidebar Overlay */}
+      {sidebarOpen && (
+        <div
+          className="fixed inset-0 bg-black/50 z-40 md:hidden"
+          onClick={() => setSidebarOpen(false)}
+        />
+      )}
+
       {/* Sidebar */}
-      <div className="w-64 border-r border-white/10 dark:border-white/5 p-4 overflow-y-auto">
-        <div className="space-y-6">
+      <div className={cn(
+        "fixed inset-y-0 left-0 z-50 w-72 transform transition-transform duration-300 ease-in-out md:relative md:translate-x-0",
+        "border-r border-white/10 dark:border-white/5 bg-background",
+        sidebarOpen ? "translate-x-0" : "-translate-x-full"
+      )}>
+        <div className="h-full flex flex-col">
+          {/* Mobile Header */}
+          <div className="flex items-center justify-between p-4 border-b border-white/10 dark:border-white/5 md:hidden">
+            <h2 className="text-lg font-semibold">Folders</h2>
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() => setSidebarOpen(false)}
+            >
+              <X className="w-5 h-5" />
+            </Button>
+          </div>
+
+          <div className="flex-1 overflow-y-auto p-4">
+            <div className="space-y-6">
           {/* Quick Stats */}
           <div className="text-center">
             <div className="text-3xl font-bold bg-gradient-to-r from-teal-500 to-teal-600 bg-clip-text text-transparent">
@@ -188,14 +217,43 @@ const Notes: React.FC = () => {
               {showArchived ? 'Show Active' : 'Show Archived'}
             </button>
           </div>
+            </div>
+          </div>
         </div>
       </div>
 
       {/* Main Content */}
       <div className="flex-1 flex flex-col overflow-hidden">
         {/* Header */}
-        <div className="p-6 border-b border-white/10 dark:border-white/5">
-          <div className="flex items-center justify-between mb-4">
+        <div className="p-4 md:p-6 border-b border-white/10 dark:border-white/5">
+          {/* Mobile Header - Menu & Title */}
+          <div className="flex items-center gap-3 mb-4 md:hidden">
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() => setSidebarOpen(true)}
+            >
+              <Menu className="w-5 h-5" />
+            </Button>
+            <div className="flex items-center gap-2">
+              <div className="p-1.5 bg-gradient-to-br from-teal-500 to-teal-600 rounded-lg">
+                <FileText className="w-4 h-4 text-white" />
+              </div>
+              <h1 className="text-lg font-bold text-gray-900 dark:text-gray-100">
+                Notes
+              </h1>
+            </div>
+            <Button
+              onClick={handleCreateNote}
+              size="icon"
+              className="ml-auto bg-gradient-to-r from-teal-500 to-teal-600 hover:from-teal-600 hover:to-teal-700 text-white"
+            >
+              <Plus className="w-4 h-4" />
+            </Button>
+          </div>
+
+          {/* Desktop Header */}
+          <div className="hidden md:flex items-center justify-between mb-4">
             <div className="flex items-center gap-3">
               <div className="p-2 bg-gradient-to-br from-teal-500 to-teal-600 rounded-xl">
                 <FileText className="w-6 h-6 text-white" />
@@ -219,14 +277,14 @@ const Notes: React.FC = () => {
           </div>
 
           {/* Search and Controls */}
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2 md:gap-3">
             <div className="relative flex-1 max-w-md">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500 dark:text-gray-400" />
               <Input
                 placeholder="Search notes..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="pl-10 bg-white/10 dark:bg-white/5 border-white/20 dark:border-white/10"
+                className="pl-10 bg-white/10 dark:bg-white/5 border-white/20 dark:border-white/10 text-sm"
               />
             </div>
             <div className="flex items-center gap-1">
