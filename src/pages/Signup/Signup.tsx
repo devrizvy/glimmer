@@ -173,11 +173,10 @@ const Signup: React.FC = () => {
 
 			// Check if signup was successful
 			if (response.success) {
-				const data = response.data;
+				const data = response.data as any;
 
 				// Check if backend returned token and userInfo directly
 				if (data && data.token && (data.userInfo || data.user)) {
-					const userInfo = data.userInfo || data.user;
 					setSuccess("Account created successfully! Welcome to zenWhisper!");
 					toast.success("Welcome to zenWhisper!");
 

@@ -1,6 +1,5 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { NavLink } from "react-router-dom";
 import { useTheme } from "@/contexts/ThemeContext";
 import {
@@ -8,18 +7,15 @@ import {
 	Users,
 	Sparkles,
 	NotebookPen,
-	FileText,
 	Brain,
 	Zap,
 	Shield,
-	Lock,
 	CheckCircle2,
 	ArrowRight,
 	Waves,
 	Feather,
 	BookOpen,
 	HelpCircle,
-	BarChart3,
 	Moon,
 	Sun,
 	Menu,
