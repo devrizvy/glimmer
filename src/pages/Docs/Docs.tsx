@@ -94,7 +94,7 @@ const Docs = () => {
 		switch (activeSection) {
 			case "getting-started":
 				return (
-					<div className="space-y-8">
+					<div className="space-y-8 ">
 						<div className="bg-card border rounded-2xl p-8">
 							<div className="flex items-center gap-4 mb-6">
 								<div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center">
@@ -409,9 +409,9 @@ const Docs = () => {
 	};
 
 	return (
-		<>
+		<div className="w-full">
 			{/* Page Header */}
-			<div className="mb-8">
+			<div className="mb-8 text-center">
 				<h1 className="text-4xl font-bold mb-2">Documentation</h1>
 				<p className="text-muted-foreground">
 					Complete guide to zenWhisper
@@ -420,7 +420,7 @@ const Docs = () => {
 
 			{/* Search Bar */}
 			<div className="mb-8">
-				<div className="relative max-w-2xl">
+				<div className="relative max-w-2xl mx-auto">
 					<Search className="absolute left-4 top-1/2 transform -translate-y-1/2 w-5 h-5 text-muted-foreground" />
 					<input
 						type="text"
@@ -432,9 +432,33 @@ const Docs = () => {
 				</div>
 			</div>
 
-			<div className="flex flex-col lg:flex-row gap-8">
-				{/* Sidebar Navigation */}
-				<div className="lg:w-80">
+			{/* Sidebar Navigation - Mobile Only */}
+			<div className="lg:hidden mb-8">
+				<div className="bg-card border rounded-2xl p-4">
+					<nav className="space-y-2">
+						{filteredSections.map((section) => (
+							<div key={section.id}>
+								<button
+									onClick={() => setActiveSection(section.id)}
+									className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all ${
+										activeSection === section.id
+											? "bg-primary text-primary-foreground"
+											: "text-muted-foreground hover:text-foreground hover:bg-muted"
+									}`}
+								>
+									{section.icon}
+									<span className="font-medium">{section.title}</span>
+								</button>
+							</div>
+						))}
+					</nav>
+				</div>
+			</div>
+
+			{/* Desktop Layout with Sidebar */}
+			<div className="hidden lg:grid grid-cols-[280px_1fr] gap-8 items-start max-w-6xl mx-auto">
+				{/* Sidebar - Desktop */}
+				<div className="shrink-0">
 					<div className="bg-card border rounded-2xl p-6 sticky top-24">
 						<nav className="space-y-6">
 							{filteredSections.map((section) => (
@@ -493,10 +517,15 @@ const Docs = () => {
 					</div>
 				</div>
 
-				{/* Main Content */}
-				<div className="flex-1 max-w-4xl">{renderContent()}</div>
+				{/* Content */}
+				<div className="min-w-0">{renderContent()}</div>
 			</div>
-		</>
+
+			{/* Mobile Layout - Full Width Content */}
+			<div className="lg:hidden max-w-4xl mx-auto">
+				{renderContent()}
+			</div>
+		</div>
 	);
 };
 

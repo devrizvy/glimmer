@@ -193,7 +193,7 @@ const FAQ = () => {
 	};
 
 	return (
-		<>
+		<div className="w-full">
 			{/* Header */}
 			<div className="text-center mb-12">
 				<div className="w-20 h-20 bg-primary/10 rounded-2xl flex items-center justify-center mx-auto mb-6">
@@ -240,7 +240,7 @@ const FAQ = () => {
 			</div>
 
 			{/* FAQ Items */}
-			<div className="max-w-4xl">
+			<div className="max-w-4xl mx-auto">
 				{filteredFAQs.length === 0 ? (
 					<div className="text-center py-12">
 						<div className="w-16 h-16 bg-muted rounded-2xl flex items-center justify-center mx-auto mb-4">
@@ -365,7 +365,7 @@ const FAQ = () => {
 					</div>
 				</div>
 			</div>
-		</>
+		</div>
 	);
 };
 

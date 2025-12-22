@@ -12,7 +12,7 @@ export default function PublicLayout() {
 		<div className="min-h-screen bg-background">
 			{/* Public Header */}
 			<header className="border-b bg-background/80 backdrop-blur-sm sticky top-0 z-50">
-				<div className="max-w-6xl mx-auto px-6 h-16 flex items-center justify-between">
+				<div className="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
 					<div className="flex items-center gap-6">
 						<NavLink to="/" className="flex items-center gap-2 hover:opacity-80 transition-opacity">
 							<div className="w-8 h-8 rounded-lg bg-gradient-to-br from-primary/20 to-accent/20 flex items-center justify-center">
@@ -86,14 +86,14 @@ export default function PublicLayout() {
 				</div>
 			</header>
 
-			{/* Main Content */}
-			<main className="max-w-4xl mx-auto px-6 py-12">
+			{/* Main Content - Full width for child pages to control their own layout */}
+			<main className="px-6 py-12">
 				<Outlet />
 			</main>
 
 			{/* Public Footer */}
 			<footer className="border-t mt-20">
-				<div className="max-w-6xl mx-auto px-6 py-8">
+				<div className="max-w-7xl mx-auto px-6 py-8">
 					<div className="flex flex-col md:flex-row items-center justify-between gap-4">
 						<div className="flex items-center gap-2">
 							<div className="w-6 h-6 rounded-lg bg-gradient-to-br from-primary/20 to-accent/20 flex items-center justify-center">

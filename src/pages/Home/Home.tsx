@@ -2,7 +2,6 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { NavLink } from "react-router-dom";
-import { useAuth } from "@/contexts/AuthContext";
 import { useTheme } from "@/contexts/ThemeContext";
 import {
 	MessageCircle,
@@ -29,7 +28,6 @@ import {
 import { useState, useEffect } from "react";
 
 const Home = () => {
-	const { isAuthenticated, user } = useAuth();
 	const { theme, toggleTheme } = useTheme();
 	const [isScrolled, setIsScrolled] = useState(false);
 	const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -42,22 +40,6 @@ const Home = () => {
 		window.addEventListener("scroll", handleScroll);
 		return () => window.removeEventListener("scroll", handleScroll);
 	}, []);
-
-	// Dashboard for authenticated users
-	if (isAuthenticated) {
-		return (
-			<div className="min-h-screen w-full bg-background">
-				<div className="max-w-6xl mx-auto px-6 py-12 space-y-8">
-					{/* Welcome Header */}
-					<div className="text-center space-y-4">
-						<div className="flex items-center justify-center gap-3 mb-6">
-							<div className="w-12 h-12 rounded-xl bg-gradient-to-br from-primary/20 to-accent/20 flex items-center justify-center">
-								<Waves className="w-7 h-7 text-primary" />
-							</div>
-							<h1 className="text-3xl font-bold">zenWhisper</h1>
-						</div>
-						<h2 className="text-2xl font-semibold">
-							Welcome back, {user?.username || "Friend"}!
 						</h2>
 						<p className="text-muted-foreground max-w-xl mx-auto">
 							Find your inner peace. Connect with study groups, take notes,
