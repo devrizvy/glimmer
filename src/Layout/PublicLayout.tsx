@@ -9,7 +9,7 @@ export default function PublicLayout() {
 	const { isAuthenticated } = useAuth();
 
 	return (
-		<div className="min-h-screen bg-background">
+		<div className="min-h-screen mx-auto bg-background">
 			{/* Public Header */}
 			<header className="border-b bg-background/80 backdrop-blur-sm sticky top-0 z-50">
 				<div className="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
@@ -87,7 +87,7 @@ export default function PublicLayout() {
 			</header>
 
 			{/* Main Content - Full width for child pages to control their own layout */}
-			<main className="px-6 py-12">
+			<main className="py-12">
 				<Outlet />
 			</main>
 

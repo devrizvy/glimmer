@@ -193,7 +193,7 @@ const FAQ = () => {
 	};
 
 	return (
-		<div className="w-full">
+		<div className="max-w-7xl mx-auto px-6 py-12">
 			{/* Header */}
 			<div className="text-center mb-12">
 				<div className="w-20 h-20 bg-primary/10 rounded-2xl flex items-center justify-center mx-auto mb-6">
