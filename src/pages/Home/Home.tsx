@@ -524,7 +524,7 @@ const Home = () => {
 						</div>
 					</div>
 					<div className="mt-8 pt-8 border-t text-center text-sm text-muted-foreground">
-						<p>&copy; 2024 zenWhisper. Built with care for students everywhere.</p>
+						<p>&copy; 2024 zenWhisper. Built with <span className="text-red-500">❤</span> by Md. Ehsanul Haque Rizvy.</p>
 					</div>
 				</div>
 			</footer>
