@@ -121,7 +121,7 @@ export default function PublicLayout() {
 						</div>
 					</div>
 					<div className="mt-6 pt-6 border-t text-center text-sm text-muted-foreground">
-						<p>&copy; 2024 zenWhisper. Built with <span className="text-red-500">❤</span> by Md. Ehsanul Haque Rizvy.</p>
+						<p>&copy; 2024 zenWhisper. Crafted by devrizvy.</p>
 					</div>
 				</div>
 			</footer>
