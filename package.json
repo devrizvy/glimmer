@@ -1,8 +1,14 @@
 {
 	"name": "zenWhisper-client-v2",
+	"version": "1.0.0",
 	"private": true,
-	"version": "0.0.0",
 	"type": "module",
+	"author": "Md. Ehsanul Haque Rizvy <rizvyhq1@gmail.com>",
+	"description": "ZenWhisper - Educational collaboration platform with real-time chat, notes, and AI summaries",
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/devrizvy/zenWhisper-client-v2.git"
+	},
 	"scripts": {
 		"dev": "vite",
 		"build": "tsc -b && vite build",
