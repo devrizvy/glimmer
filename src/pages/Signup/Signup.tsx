@@ -22,7 +22,7 @@ interface ValidationState {
 }
 
 const Signup: React.FC = () => {
-	const { isAuthenticated } = useAuth();
+	const { isAuthenticated, login } = useAuth();
 	const navigate = useNavigate();
 	const [showPassword, setShowPassword] = useState(false);
 	const [isLoading, setIsLoading] = useState(false);
@@ -149,19 +149,68 @@ const Signup: React.FC = () => {
 				formData.password
 			);
 
-			if (response.success) {
-				setSuccess("Account created successfully! Redirecting to login...");
+			// Log the response for debugging
+			console.log("Signup response:", response);
 
-				// Auto-login after successful signup
-				setTimeout(() => {
-					navigate("/login");
-				}, 2000);
+			// Check if signup was successful
+			if (response.success) {
+				const data = response.data;
+
+				// Check if backend returned token and userInfo directly
+				if (data && data.token && (data.userInfo || data.user)) {
+					const userInfo = data.userInfo || data.user;
+					// Use loginWithToken by calling it from auth context
+					// We need to get it differently since we're using login now
+					setSuccess("Account created successfully! Welcome to zenWhisper!");
+					toast.success("Welcome to zenWhisper!");
+
+					// Redirect to login page with credentials pre-filled
+					setTimeout(() => {
+						navigate("/login", { state: { email: formData.email, autoLogin: true } });
+					}, 1000);
+				} else {
+					// Backend only returned success message, need to login separately
+					setSuccess("Account created! Logging you in...");
+
+					// Auto-login with the credentials
+					const loginSuccess = await login(formData.email, formData.password);
+
+					if (loginSuccess) {
+						toast.success("Welcome to zenWhisper!");
+						setTimeout(() => {
+							navigate("/");
+						}, 500);
+					} else {
+						// Account created but login failed - redirect to login
+						setError("Account created! Please login with your credentials.");
+						setTimeout(() => {
+							navigate("/login");
+						}, 1500);
+					}
+				}
 			} else {
-				setError(response.error || "Signup failed");
-				toast.error(response.error || "Signup failed");
+				// Signup failed with error from backend
+				const errorMsg = response.error || "Signup failed. Please try again.";
+				setError(errorMsg);
+				toast.error(errorMsg);
 			}
 		} catch (err: any) {
-			const errorMessage = err.response?.data?.message || "Connection error. Please try again.";
+			// Better error extraction
+			console.error("Signup error:", err);
+
+			let errorMessage = "Connection error. Please try again.";
+
+			// Try to extract error from different possible structures
+			if (err?.response?.data?.message) {
+				errorMessage = err.response.data.message;
+			} else if (err?.response?.data?.error) {
+				errorMessage = err.response.data.error;
+			} else if (err?.message) {
+				errorMessage = err.message;
+			} else if (typeof err === "string") {
+				errorMessage = err;
+			}
+
 			setError(errorMessage);
 			toast.error(errorMessage);
 		} finally {

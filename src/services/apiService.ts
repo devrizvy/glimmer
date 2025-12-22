@@ -84,17 +84,33 @@ const apiRequest = async <T>(
 				break;
 		}
 
+		// Log response for debugging
+		console.log(`API Response [${options.method || "GET"}] ${endpoint}:`, response.data);
+
 		return {
 			success: true,
 			data: response.data,
 		};
 	} catch (error: any) {
+		// Log error for debugging
+		console.error(`API Error [${options.method || "GET"}] ${endpoint}:`, error);
+		console.error("Error response data:", error.response?.data);
+
+		// Try to extract the actual error message from various possible structures
+		let errorMessage = "Unknown error occurred";
+
+		if (error.response?.data) {
+			const data = error.response.data;
+			errorMessage = data.message || data.error || data.errorMsg || JSON.stringify(data);
+		} else if (error.message) {
+			errorMessage = error.message;
+		} else if (typeof error === "string") {
+			errorMessage = error;
+		}
+
 		return {
 			success: false,
-			error:
-				error.response?.data?.message ||
-				error.message ||
-				"Unknown error occurred",
+			error: errorMessage,
 		};
 	}
 };
