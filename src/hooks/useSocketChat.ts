@@ -109,7 +109,7 @@ export const useSocketChat = ({
 			}));
 		};
 
-		const handleJoiningMessage = (message: {
+		const handleJoiningMessage = (_message: {
 			author: string;
 			message: string;
 			time: string;
@@ -117,7 +117,7 @@ export const useSocketChat = ({
 			// This could be displayed as a system message in the current room
 		};
 
-		const handleLeaveMessage = (message: {
+		const handleLeaveMessage = (_message: {
 			author: string;
 			message: string;
 			time: string;

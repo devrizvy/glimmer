@@ -95,7 +95,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
 
 		if (savedUser && savedToken) {
 			try {
-				const user = JSON.parse(savedUser);
+				const user: User = JSON.parse(savedUser);
 				// Validate token (simple check for now, you could add JWT validation)
 				dispatch({
 					type: "LOGIN_SUCCESS",
@@ -117,19 +117,20 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
 			const response = await authApi.login(email, password);
 			if (response.success && response.data) {
 				const { token, userInfo } = response.data;
+				const userData = userInfo as User & { status: string };
 
 				// Check if user is blocked
-				if (userInfo.status === "BLOCKED") {
+				if (userData.status === "BLOCKED") {
 					toast.error("Your account has been blocked. Please contact the administrator.");
 					return false;
 				}
 
 				const user: User = {
-					email: userInfo.email,
-					username: userInfo.username,
-					name: userInfo.username,
-					role: userInfo.role,
-					status: userInfo.status,
+					email: userData.email,
+					username: userData.username,
+					name: userData.username,
+					role: userData.role,
+					status: userData.status,
 				};
 
 				localStorage.setItem("zenwhisper_user", JSON.stringify(user));

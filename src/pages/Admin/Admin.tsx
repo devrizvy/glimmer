@@ -7,15 +7,12 @@ import {
 	Users,
 	MessageSquare,
 	Shield,
-	ShieldAlert,
 	Ban,
 	ShieldCheck,
 	Trash2,
 	UserCog,
 	RefreshCw,
 	Search,
-	Check,
-	X,
 } from "lucide-react";
 import { adminApi, type AdminUser, type AdminRoom } from "@/services/adminService";
 import toast from "react-hot-toast";
@@ -28,7 +25,6 @@ const Admin = () => {
 	const [rooms, setRooms] = useState<AdminRoom[]>([]);
 	const [loading, setLoading] = useState(true);
 	const [searchQuery, setSearchQuery] = useState("");
-	const [selectedUsers, setSelectedUsers] = useState<Set<string>>(new Set());
 	const [selectedRooms, setSelectedRooms] = useState<Set<string>>(new Set());
 
 	// Check if user is admin
@@ -75,17 +71,6 @@ const Admin = () => {
 			}
 		}
 	}, [activeTab, user]);
-
-	// Toggle user selection
-	const toggleUserSelection = (email: string) => {
-		const newSelected = new Set(selectedUsers);
-		if (newSelected.has(email)) {
-			newSelected.delete(email);
-		} else {
-			newSelected.add(email);
-		}
-		setSelectedUsers(newSelected);
-	};
 
 	// Toggle room selection
 	const toggleRoomSelection = (roomId: string) => {

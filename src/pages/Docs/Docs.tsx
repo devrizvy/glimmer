@@ -13,8 +13,6 @@ import {
 	ExternalLink,
 	GitBranch,
 	Waves,
-	ArrowRight,
-	CheckCircle2,
 } from "lucide-react";
 
 const Docs = () => {
