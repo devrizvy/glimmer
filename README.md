@@ -1,4 +1,4 @@
-# zenWhisper
+# Glimmer
 
 <div align="center">
 
@@ -13,7 +13,7 @@
 ║   ╚══════╝╚══════╝╚═╝  ╚═══╝ ╚══╝╚══╝ ╚═╝  ╚═╝╚═╝╚══════╝╚═╝     ╚══════╝╚═╝  ╚═╝║
 ║                                                           ║
 ║                Collaborative Study Platform               ║
-║           "In the stillness of mind, wisdom whispers"    ║
+║              "Where ideas illuminate together"           ║
 ║                                                           ║
 ╚═══════════════════════════════════════════════════════════╝
 ```
@@ -23,7 +23,7 @@
 [![Socket.IO](https://img.shields.io/badge/Socket.IO-4.8.1-010101?style=for-the-badge&logo=socket.io&logoColor=white)](https://socket.io/)
 [![TailwindCSS](https://img.shields.io/badge/Tailwind-4.1.17-38B2AC?style=for-the-badge&logo=tailwind-css&logoColor=white)](https://tailwindcss.com/)
 
-[Live Demo](https://zenwhisper.com) • [Documentation](#documentation) • [Report Bug](https://github.com/devrizvy/zenwhisper/issues) • [Request Feature](https://github.com/devrizvy/zenwhisper/issues)
+[Live Demo](https://glimmer.com) • [Documentation](#documentation) • [Report Bug](https://github.com/devrizvy/glimmer/issues) • [Request Feature](https://github.com/devrizvy/glimmer/issues)
 
 </div>
 
@@ -31,11 +31,11 @@
 
 ## About The Project
 
-**zenWhisper** is a modern, real-time collaborative study platform designed specifically for students who want to learn together. Built with a calming "zen" aesthetic, it provides a distraction-free environment where students can connect, share knowledge, and enhance their learning experience.
+**Glimmer** is a modern, real-time collaborative study platform designed specifically for students who want to learn together. Built with a calming aesthetic, it provides a distraction-free environment where students can connect, share knowledge, and enhance their learning experience.
 
 ### Purpose
 
-In today's digital learning landscape, students need more than just chat apps—they need **focused study environments**. zenWhisper bridges the gap by offering:
+In today's digital learning landscape, students need more than just chat apps—they need **focused study environments**. Glimmer bridges the gap by offering:
 
 - **Real-time Messaging** - Connect instantly with study partners
 - **Virtual Classrooms** - Create dedicated group study spaces
@@ -103,8 +103,8 @@ npm >= 9.0.0
 **1. Clone the repository**
 
 ```bash
-git clone https://github.com/devrizvy/zenwhisper.git
-cd zenwhisper
+git clone https://github.com/devrizvy/glimmer.git
+cd glimmer
 ```
 
 **2. Install dependencies**
@@ -173,7 +173,7 @@ Navigate to `http://localhost:5173` and start exploring!
 ## Project Structure
 
 ```
-zenwhisper/
+glimmer/
 │
 ├── src/
 │   ├── components/
@@ -449,15 +449,15 @@ If you found this project helpful, please consider:
 │                                                             │
 │              Made with care and dedication                  │
 │                                                             │
-│         "In the stillness of mind, wisdom whispers"         │
+│         "Where ideas illuminate together"                    │
 │                                                             │
-│                    zenWhisper © 2024                        │
+│                       Glimmer © 2024                        │
 │                                                             │
 └─────────────────────────────────────────────────────────────┘
 ```
 
 **Star us on GitHub** — it motivates us to keep improving!
 
-[Back to Top](#zenwhisper)
+[Back to Top](#glimmer)
 
 </div>

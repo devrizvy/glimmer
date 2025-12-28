@@ -132,9 +132,9 @@ export function AppSidebar() {
                 <div className="absolute -top-1 -right-1 w-3 h-3 rounded-full bg-primary status-online"></div>
               </div>
               <div>
-                <h1 className="mira-title text-lg font-semibold">zenWhisper</h1>
+                <h1 className="mira-title text-lg font-semibold">Glimmer</h1>
                 <p className="text-sidebar-foreground/60 text-xs font-medium tracking-wide">
-                  Find your inner peace
+                  Where ideas illuminate together
                 </p>
               </div>
             </div>
@@ -283,7 +283,7 @@ export function AppSidebar() {
           <div className="flex items-start gap-2 text-muted-foreground text-xs mt-4">
             <Feather className="w-4 h-4 mt-0.5 flex-shrink-0" />
             <p className="font-medium italic leading-relaxed">
-              "In the stillness of mind, wisdom whispers"
+              "Where ideas illuminate together"
             </p>
           </div>
         </SidebarFooter>

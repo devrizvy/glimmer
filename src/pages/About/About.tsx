@@ -82,7 +82,7 @@ const About = () => {
 							/>
 						</div>
 						<h1 className="mira-title text-5xl sm:text-6xl mb-6">
-							About zenWhisper
+							About Glimmer
 						</h1>
 						<p className="text-xl text-foreground/80 max-w-3xl mx-auto leading-relaxed">
 							Bridging the gap between students and teachers through
@@ -291,7 +291,7 @@ const About = () => {
 						</h2>
 						<p className="text-lg text-foreground/70 mb-8 max-w-2xl mx-auto">
 							Join thousands of students and teachers who are already using
-							zenWhisper to make education more collaborative and engaging.
+							Glimmer to make education more collaborative and engaging.
 						</p>
 						<div className="flex flex-col sm:flex-row gap-4 justify-center">
 							<button

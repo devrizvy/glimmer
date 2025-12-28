@@ -90,8 +90,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
 
 	// Check for saved user and token on mount
 	useEffect(() => {
-		const savedUser = localStorage.getItem("zenwhisper_user");
-		const savedToken = localStorage.getItem("zenwhisper_token");
+		const savedUser = localStorage.getItem("glimmer_user");
+		const savedToken = localStorage.getItem("glimmer_token");
 
 		if (savedUser && savedToken) {
 			try {
@@ -103,8 +103,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
 				});
 			} catch (error) {
 				toast.error("Session expired. Please login again.");
-				localStorage.removeItem("zenwhisper_user");
-				localStorage.removeItem("zenwhisper_token");
+				localStorage.removeItem("glimmer_user");
+				localStorage.removeItem("glimmer_token");
 				dispatch({ type: "SET_LOADING", payload: false });
 			}
 		} else {
@@ -133,8 +133,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
 					status: userData.status,
 				};
 
-				localStorage.setItem("zenwhisper_user", JSON.stringify(user));
-				localStorage.setItem("zenwhisper_token", token);
+				localStorage.setItem("glimmer_user", JSON.stringify(user));
+				localStorage.setItem("glimmer_token", token);
 				dispatch({
 					type: "LOGIN_SUCCESS",
 					payload: { user, token },
@@ -160,8 +160,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
 			status: user.status,
 		};
 
-		localStorage.setItem("zenwhisper_user", JSON.stringify(mappedUser));
-		localStorage.setItem("zenwhisper_token", token);
+		localStorage.setItem("glimmer_user", JSON.stringify(mappedUser));
+		localStorage.setItem("glimmer_token", token);
 		dispatch({
 			type: "LOGIN_SUCCESS",
 			payload: { user: mappedUser, token },
@@ -169,14 +169,14 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
 	};
 
 	const logout = () => {
-		localStorage.removeItem("zenwhisper_user");
-		localStorage.removeItem("zenwhisper_token");
+		localStorage.removeItem("glimmer_user");
+		localStorage.removeItem("glimmer_token");
 		dispatch({ type: "LOGOUT" });
 	};
 
 	const setUser = (user: User) => {
-		const token = localStorage.getItem("zenwhisper_token") || "demo-token";
-		localStorage.setItem("zenwhisper_user", JSON.stringify(user));
+		const token = localStorage.getItem("glimmer_token") || "demo-token";
+		localStorage.setItem("glimmer_user", JSON.stringify(user));
 		dispatch({
 			type: "LOGIN_SUCCESS",
 			payload: { user, token },

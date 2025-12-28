@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-**zenWhisper-client-v2** is a modern React-based chat application with real-time messaging capabilities, built using TypeScript and Vite.
+**Glimmer** is a modern React-based chat application with real-time messaging capabilities, built using TypeScript and Vite.
 
 ## Technology Stack
 

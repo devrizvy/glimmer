@@ -91,7 +91,7 @@ const Login: React.FC = () => {
 							}`}>
 								<Waves className="w-5 h-5 text-white" />
 							</div>
-							<span className="font-bold text-base tracking-tight">zenWhisper</span>
+							<span className="font-bold text-base tracking-tight">Glimmer</span>
 						</NavLink>
 
 						{/* Desktop Navigation */}
@@ -211,7 +211,7 @@ const Login: React.FC = () => {
 						</div>
 						<h1 className="text-4xl font-bold mb-3">Welcome Back</h1>
 						<p className="text-muted-foreground text-base">
-							Sign in to continue to zenWhisper
+							Sign in to continue to Glimmer
 						</p>
 					</div>
 
@@ -296,7 +296,7 @@ const Login: React.FC = () => {
 							<div className="mt-6 pt-6 border-t">
 								<div className="flex items-center justify-center gap-2 text-muted-foreground text-sm">
 									<Shield className="w-4 h-4" />
-									<span>Secure login powered by zenWhisper</span>
+									<span>Secure login powered by Glimmer</span>
 								</div>
 							</div>
 						</CardContent>

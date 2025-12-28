@@ -1,4 +1,4 @@
-// HTTP API Service for zenWhisper backend
+// HTTP API Service for Glimmer backend
 import api from "./axios";
 
 interface ApiResponse<T> {

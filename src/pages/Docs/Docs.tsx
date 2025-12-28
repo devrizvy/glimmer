@@ -53,12 +53,12 @@ const Docs = () => {
 								<div>
 									<h2 className="text-2xl font-bold">Getting Started</h2>
 									<p className="text-muted-foreground">
-										Quick guide to start using zenWhisper
+										Quick guide to start using Glimmer
 									</p>
 								</div>
 							</div>
 							<p className="text-muted-foreground max-w-2xl">
-								zenWhisper is a collaborative study platform designed for students.
+								Glimmer is a collaborative study platform designed for students.
 								Connect with peers, join study groups, take notes, and use AI to summarize your learning materials.
 							</p>
 						</div>
@@ -269,7 +269,7 @@ const Docs = () => {
 					<span className="text-transparent bg-clip-text bg-gradient-to-r from-primary to-accent">Docs</span>
 				</h1>
 				<p className="text-muted-foreground text-lg">
-					Everything you need to know about zenWhisper
+					Everything you need to know about Glimmer
 				</p>
 			</div>
 
@@ -333,7 +333,7 @@ const Docs = () => {
 
 						<div className="mt-8 pt-8 border-t border-border/50">
 							<a
-								href="https://github.com/devrizvy/zenWhisper-client-v2"
+								href="https://github.com/devrizvy/glimmer"
 								target="_blank"
 								rel="noopener noreferrer"
 								className="flex items-center gap-3 px-4 py-3 text-muted-foreground hover:text-foreground hover:bg-muted rounded-xl transition-all group"

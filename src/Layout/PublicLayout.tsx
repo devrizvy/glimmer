@@ -18,7 +18,7 @@ export default function PublicLayout() {
 							<div className="w-8 h-8 rounded-lg bg-gradient-to-br from-primary/20 to-accent/20 flex items-center justify-center">
 								<Waves className="w-5 h-5 text-primary" />
 							</div>
-							<span className="font-semibold">zenWhisper</span>
+							<span className="font-semibold">Glimmer</span>
 						</NavLink>
 
 						<nav className="hidden md:flex items-center gap-4 text-sm">
@@ -99,7 +99,7 @@ export default function PublicLayout() {
 							<div className="w-6 h-6 rounded-lg bg-gradient-to-br from-primary/20 to-accent/20 flex items-center justify-center">
 								<Waves className="w-4 h-4 text-primary" />
 							</div>
-							<span className="text-sm text-muted-foreground">zenWhisper</span>
+							<span className="text-sm text-muted-foreground">Glimmer</span>
 						</div>
 						<div className="flex items-center gap-6 text-sm text-muted-foreground">
 							<NavLink to="/docs" className="hover:text-foreground transition-colors">
@@ -121,7 +121,7 @@ export default function PublicLayout() {
 						</div>
 					</div>
 					<div className="mt-6 pt-6 border-t text-center text-sm text-muted-foreground">
-						<p>&copy; 2024 zenWhisper. Crafted by devrizvy.</p>
+						<p>&copy; 2025 Glimmer. Crafted by devrizvy.</p>
 					</div>
 				</div>
 			</footer>

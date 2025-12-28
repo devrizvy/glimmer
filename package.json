@@ -1,14 +1,14 @@
 {
-	"name": "zenWhisper-client-v2",
-	"homepage": "https://devrizvy.github.io/zenWhisper-client-v2",
+	"name": "glimmer",
+	"homepage": "https://devrizvy.github.io/glimmer",
 	"version": "1.0.0",
 	"private": true,
 	"type": "module",
 	"author": "Md. Ehsanul Haque Rizvy <rizvyhq1@gmail.com>",
-	"description": "ZenWhisper - Educational collaboration platform with real-time chat, notes, and AI summaries",
+	"description": "Glimmer - Educational collaboration platform with real-time chat, notes, and AI summaries",
 	"repository": {
 		"type": "git",
-		"url": "https://github.com/devrizvy/zenWhisper-client-v2.git"
+		"url": "https://github.com/devrizvy/glimmer.git"
 	},
 	"scripts": {
 		"dev": "vite",

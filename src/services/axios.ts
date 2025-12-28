@@ -12,7 +12,7 @@ const api = axios.create({
 // Request interceptor to add auth token if available
 api.interceptors.request.use(
 	(config) => {
-		const token = localStorage.getItem("zenwhisper_token");
+		const token = localStorage.getItem("glimmer_token");
 		if (token) {
 			config.headers.Authorization = `Bearer ${token}`;
 		}
@@ -31,8 +31,8 @@ api.interceptors.response.use(
 	(error) => {
 		// Handle token expiration
 		if (error.response?.status === 401) {
-			localStorage.removeItem("zenwhisper_token");
-			localStorage.removeItem("zenwhisper_user");
+			localStorage.removeItem("glimmer_token");
+			localStorage.removeItem("glimmer_user");
 			// Clear all auth data and redirect to login
 			window.location.href = "/login";
 		}

@@ -13,7 +13,7 @@ const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
 export function ThemeProvider({ children }: { children: React.ReactNode }) {
   const [theme, setThemeState] = useState<Theme>(() => {
     // Check localStorage first, then system preference
-    const stored = localStorage.getItem('zenwhisper-theme') as Theme | null;
+    const stored = localStorage.getItem('glimmer-theme') as Theme | null;
     if (stored) return stored;
 
     // Check system preference
@@ -26,7 +26,7 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
 
   const setTheme = (newTheme: Theme) => {
     setThemeState(newTheme);
-    localStorage.setItem('zenwhisper-theme', newTheme);
+    localStorage.setItem('glimmer-theme', newTheme);
   };
 
   const toggleTheme = () => {

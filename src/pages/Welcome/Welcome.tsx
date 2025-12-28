@@ -45,8 +45,8 @@ const Welcome = () => {
 							<Waves className="w-9 h-9 text-white" />
 						</div>
 						<div className="text-left">
-							<h1 className="text-3xl font-bold tracking-tight">zenWhisper</h1>
-							<p className="text-sm text-muted-foreground">Find your inner peace</p>
+							<h1 className="text-3xl font-bold tracking-tight">Glimmer</h1>
+							<p className="text-sm text-muted-foreground">Where ideas illuminate together</p>
 						</div>
 					</div>
 
@@ -151,7 +151,7 @@ const Welcome = () => {
 							</div>
 							<div>
 								<h3 className="text-lg font-semibold">Getting Started</h3>
-								<p className="text-sm text-muted-foreground">Follow these steps to make the most of zenWhisper</p>
+								<p className="text-sm text-muted-foreground">Follow these steps to make the most of Glimmer</p>
 							</div>
 						</div>
 						<div className="space-y-4">

@@ -62,7 +62,7 @@ const FAQ = () => {
 		{
 			id: 1,
 			category: "getting-started",
-			question: "How do I create an account on zenWhisper?",
+			question: "How do I create an account on Glimmer?",
 			answer:
 				'Creating an account is simple! Click on the "Sign Up" button on the homepage, enter your email, choose a username and password, and verify your email address. The whole process takes less than 2 minutes.',
 			icon: <Zap className="w-5 h-5" />,
@@ -70,17 +70,17 @@ const FAQ = () => {
 		{
 			id: 2,
 			category: "getting-started",
-			question: "Is zenWhisper free to use?",
+			question: "Is Glimmer free to use?",
 			answer:
-				"Yes! zenWhisper offers a free tier with all essential features for students and teachers. We also have premium plans with additional features like unlimited storage, advanced AI tools, and priority support.",
+				"Yes! Glimmer offers a free tier with all essential features for students and teachers. We also have premium plans with additional features like unlimited storage, advanced AI tools, and priority support.",
 			icon: <CreditCard className="w-5 h-5" />,
 		},
 		{
 			id: 3,
 			category: "features",
-			question: "What features does zenWhisper offer?",
+			question: "What features does Glimmer offer?",
 			answer:
-				"zenWhisper provides real-time chat, virtual classrooms, smart notes, AI-powered summaries, file sharing, video calls, and collaborative tools. All designed specifically for educational environments.",
+				"Glimmer provides real-time chat, virtual classrooms, smart notes, AI-powered summaries, file sharing, video calls, and collaborative tools. All designed specifically for educational environments.",
 			icon: <BookOpen className="w-5 h-5" />,
 		},
 		{
@@ -126,9 +126,9 @@ const FAQ = () => {
 		{
 			id: 9,
 			category: "technical",
-			question: "What browsers does zenWhisper support?",
+			question: "What browsers does Glimmer support?",
 			answer:
-				"zenWhisper works best on the latest versions of Chrome, Firefox, Safari, and Edge. We recommend keeping your browser updated for the best experience and security.",
+				"Glimmer works best on the latest versions of Chrome, Firefox, Safari, and Edge. We recommend keeping your browser updated for the best experience and security.",
 			icon: <Globe className="w-5 h-5" />,
 		},
 		{
@@ -136,7 +136,7 @@ const FAQ = () => {
 			category: "technical",
 			question: "Is there a mobile app available?",
 			answer:
-				"Yes! zenWhisper is available on both iOS and Android. You can download it from the App Store or Google Play Store. Your data syncs seamlessly across all devices.",
+				"Yes! Glimmer is available on both iOS and Android. You can download it from the App Store or Google Play Store. Your data syncs seamlessly across all devices.",
 			icon: <Smartphone className="w-5 h-5" />,
 		},
 		{
@@ -203,7 +203,7 @@ const FAQ = () => {
 					Frequently Asked Questions
 				</h1>
 				<p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-					Find answers to common questions about zenWhisper
+					Find answers to common questions about Glimmer
 				</p>
 			</div>
 
@@ -340,10 +340,10 @@ const FAQ = () => {
 								Get detailed help via email
 							</p>
 							<a
-								href="mailto:support@zenwhisper.com"
+								href="mailto:support@glimmer.com"
 								className="text-primary hover:text-primary/80 transition-colors text-sm font-medium flex items-center gap-1 mx-auto"
 							>
-								support@zenwhisper.com <ExternalLink className="w-3 h-3" />
+								support@glimmer.com <ExternalLink className="w-3 h-3" />
 							</a>
 						</div>
 

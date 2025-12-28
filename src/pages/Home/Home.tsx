@@ -58,7 +58,7 @@ const Home = () => {
 							}`}>
 								<Waves className="w-5 h-5 text-white" />
 							</div>
-							<span className="font-bold text-base tracking-tight">zenWhisper</span>
+							<span className="font-bold text-base tracking-tight">Glimmer</span>
 						</NavLink>
 
 						{/* Desktop Navigation */}
@@ -195,8 +195,8 @@ const Home = () => {
 								<Waves className="w-9 h-9 text-white" />
 							</div>
 							<div className="text-left">
-								<h1 className="text-3xl font-bold tracking-tight">zenWhisper</h1>
-								<p className="text-sm text-muted-foreground">Find your inner peace</p>
+								<h1 className="text-3xl font-bold tracking-tight">Glimmer</h1>
+								<p className="text-sm text-muted-foreground">Where ideas illuminate together</p>
 							</div>
 						</div>
 
@@ -462,7 +462,7 @@ const Home = () => {
 							<span>Simple Steps</span>
 						</div>
 						<h2 className="text-3xl md:text-4xl font-bold mb-4">
-							How zenWhisper Works
+							How Glimmer Works
 						</h2>
 						<p className="text-muted-foreground text-lg">
 							Get started in minutes, study smarter for hours
@@ -529,7 +529,7 @@ const Home = () => {
 					</h2>
 					<p className="text-lg text-muted-foreground max-w-2xl mx-auto">
 						Join thousands of students who are already learning more effectively
-						with zenWhisper. Start your journey today.
+						with Glimmer. Start your journey today.
 					</p>
 					<div className="flex flex-col sm:flex-row items-center justify-center gap-4 pt-4">
 						<NavLink to="/signup" className="w-full sm:w-auto group">
@@ -557,8 +557,8 @@ const Home = () => {
 								<Waves className="w-6 h-6 text-primary" />
 							</div>
 							<div>
-								<p className="font-semibold">zenWhisper</p>
-								<p className="text-xs text-muted-foreground">Find your inner peace</p>
+								<p className="font-semibold">Glimmer</p>
+								<p className="text-xs text-muted-foreground">Where ideas illuminate together</p>
 							</div>
 						</div>
 						<div className="flex items-center gap-6 text-sm text-muted-foreground">
@@ -574,7 +574,7 @@ const Home = () => {
 						</div>
 					</div>
 					<div className="mt-8 pt-8 border-t text-center text-sm text-muted-foreground">
-						<p>&copy; 2025 zenWhisper. Crafted by devrizvy.</p>
+						<p>&copy; 2025 Glimmer. Crafted by devrizvy.</p>
 					</div>
 				</div>
 			</footer>

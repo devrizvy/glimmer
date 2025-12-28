@@ -97,7 +97,7 @@ const Overview = () => {
 			id: 1,
 			type: "user_joined",
 			user: "Sarah Chen",
-			action: "joined zenWhisper",
+			action: "joined Glimmer",
 			time: "2 minutes ago",
 			icon: <UserCheck className="w-4 h-4" />,
 		},
@@ -216,7 +216,7 @@ const Overview = () => {
 					<div>
 						<h1 className="mira-title text-4xl mb-2">Platform Overview</h1>
 						<p className="text-xl text-foreground/70">
-							Real-time insights and analytics for zenWhisper
+							Real-time insights and analytics for Glimmer
 						</p>
 					</div>
 

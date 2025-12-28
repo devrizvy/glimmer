@@ -567,7 +567,7 @@ const Settings = () => {
 				<div className="mb-8">
 					<h1 className="mira-title text-4xl mb-2">Settings</h1>
 					<p className="text-foreground/70">
-						Customize your zenWhisper experience
+						Customize your Glimmer experience
 					</p>
 				</div>
 
