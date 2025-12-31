@@ -8,6 +8,7 @@ interface User {
 	name?: string;
 	role?: string;
 	status?: string;
+	credits?: number;
 }
 
 interface AuthState {
@@ -21,7 +22,8 @@ type AuthAction =
 	| { type: "SET_LOADING"; payload: boolean }
 	| { type: "LOGIN_SUCCESS"; payload: { user: User; token: string } }
 	| { type: "LOGOUT" }
-	| { type: "SET_USER"; payload: User };
+	| { type: "SET_USER"; payload: User }
+	| { type: "UPDATE_CREDITS"; payload: number };
 
 const initialState: AuthState = {
 	user: null,
@@ -57,6 +59,11 @@ const authReducer = (state: AuthState, action: AuthAction): AuthState => {
 				isAuthenticated: true,
 				isLoading: false,
 			};
+		case "UPDATE_CREDITS":
+			return {
+				...state,
+				user: state.user ? { ...state.user, credits: action.payload } : null,
+			};
 		default:
 			return state;
 	}
@@ -71,6 +78,7 @@ interface AuthContextType {
 	loginWithToken: (user: User, token: string) => void;
 	logout: () => void;
 	setUser: (user: User) => void;
+	updateCredits: (credits: number) => void;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -117,7 +125,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
 			const response = await authApi.login(email, password);
 			if (response.success && response.data) {
 				const { token, userInfo } = response.data;
-				const userData = userInfo as User & { status: string };
+				const userData = userInfo as User & { status: string; credits?: number };
 
 				// Check if user is blocked
 				if (userData.status === "BLOCKED") {
@@ -131,6 +139,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
 					name: userData.username,
 					role: userData.role,
 					status: userData.status,
+					credits: userData.credits ?? 10,
 				};
 
 				localStorage.setItem("glimmer_user", JSON.stringify(user));
@@ -158,6 +167,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
 			name: user.name,
 			role: user.role,
 			status: user.status,
+			credits: user.credits ?? 10,
 		};
 
 		localStorage.setItem("glimmer_user", JSON.stringify(mappedUser));
@@ -183,12 +193,24 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
 		});
 	};
 
+	const updateCredits = (credits: number) => {
+		if (state.user) {
+			const updatedUser = { ...state.user, credits };
+			localStorage.setItem("glimmer_user", JSON.stringify(updatedUser));
+			dispatch({
+				type: "UPDATE_CREDITS",
+				payload: credits,
+			});
+		}
+	};
+
 	const value: AuthContextType = {
 		...state,
 		login,
 		loginWithToken,
 		logout,
 		setUser,
+		updateCredits,
 	};
 
 	return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

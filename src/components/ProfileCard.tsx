@@ -14,6 +14,7 @@ import {
   HelpCircle,
   LogOut,
   Settings,
+  Coins,
 } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { NavLink, useNavigate } from "react-router-dom";
@@ -68,6 +69,21 @@ const ProfileCard = () => {
           <DropdownMenuLabel className="text-xs text-sidebar-foreground/60 font-normal">
             My Account
           </DropdownMenuLabel>
+          <DropdownMenuSeparator className="bg-sidebar-border/50" />
+
+          {/* Credits Display */}
+          <div className="px-2 py-2">
+            <div className="flex items-center gap-2 px-2 py-1.5 bg-primary/10 rounded-md border border-primary/20">
+              <Coins className="w-4 h-4 text-primary" />
+              <div className="flex-1">
+                <p className="text-xs text-sidebar-foreground/60">Credits</p>
+                <p className="text-sm font-semibold text-sidebar-foreground">
+                  {user?.credits ?? 10}
+                </p>
+              </div>
+            </div>
+          </div>
+
           <DropdownMenuSeparator className="bg-sidebar-border/50" />
 
           <DropdownMenuItem className="text-sidebar-foreground hover:bg-sidebar-accent/50 cursor-pointer">

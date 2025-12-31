@@ -13,6 +13,9 @@ import {
 	UserCog,
 	RefreshCw,
 	Search,
+	Coins,
+	Check,
+	X,
 } from "lucide-react";
 import { adminApi, type AdminUser, type AdminRoom } from "@/services/adminService";
 import toast from "react-hot-toast";
@@ -26,6 +29,8 @@ const Admin = () => {
 	const [loading, setLoading] = useState(true);
 	const [searchQuery, setSearchQuery] = useState("");
 	const [selectedRooms, setSelectedRooms] = useState<Set<string>>(new Set());
+	const [editingCreditsEmail, setEditingCreditsEmail] = useState<string | null>(null);
+	const [tempCredits, setTempCredits] = useState<string>("");
 
 	// Check if user is admin
 	useEffect(() => {
@@ -137,6 +142,37 @@ const Admin = () => {
 		}
 	};
 
+	// Start editing credits
+	const startEditingCredits = (email: string, currentCredits: number) => {
+		setEditingCreditsEmail(email);
+		setTempCredits(currentCredits.toString());
+	};
+
+	// Save credits
+	const saveCredits = async (email: string) => {
+		const credits = parseInt(tempCredits, 10);
+		if (isNaN(credits) || credits < 0) {
+			toast.error("Please enter a valid credit amount (>= 0)");
+			return;
+		}
+
+		const response = await adminApi.updateUserCredits(email, { credits });
+		if (response.success) {
+			toast.success(response.message || "Credits updated successfully");
+			setEditingCreditsEmail(null);
+			setTempCredits("");
+			fetchUsers();
+		} else {
+			toast.error(response.error || "Failed to update credits");
+		}
+	};
+
+	// Cancel editing credits
+	const cancelEditingCredits = () => {
+		setEditingCreditsEmail(null);
+		setTempCredits("");
+	};
+
 	// Filter users
 	const filteredUsers = users.filter(
 		(u) =>
@@ -244,6 +280,51 @@ const Admin = () => {
 														<p className="text-sm text-muted-foreground truncate">{userItem.email}</p>
 													</div>
 													<div className="flex items-center gap-2 flex-shrink-0">
+														{/* Credits Badge */}
+														{editingCreditsEmail === userItem.email ? (
+															<div className="flex items-center gap-1">
+																<input
+																	type="number"
+																	min="0"
+																	value={tempCredits}
+																	onChange={(e) => setTempCredits(e.target.value)}
+																	className="w-16 px-2 py-1 text-xs border border-primary/50 rounded bg-background focus:outline-none focus:ring-2 focus:ring-primary/50"
+																	onKeyDown={(e) => {
+																		if (e.key === "Enter") saveCredits(userItem.email);
+																		if (e.key === "Escape") cancelEditingCredits();
+																	}}
+																	autoFocus
+																/>
+																<Button
+																	variant="ghost"
+																	size="sm"
+																	onClick={() => saveCredits(userItem.email)}
+																	className="h-6 w-6 p-0 text-green-500 hover:text-green-600 hover:bg-green-500/10"
+																>
+																	<Check className="w-3 h-3" />
+																</Button>
+																<Button
+																	variant="ghost"
+																	size="sm"
+																	onClick={cancelEditingCredits}
+																	className="h-6 w-6 p-0 text-red-500 hover:text-red-600 hover:bg-red-500/10"
+																>
+																	<X className="w-3 h-3" />
+																</Button>
+															</div>
+														) : (
+															<button
+																onClick={() => startEditingCredits(userItem.email, userItem.credits ?? 10)}
+																className={`px-2 py-1 rounded-full text-xs font-medium flex items-center gap-1 transition-colors ${
+																	(userItem.credits ?? 10) >= 3
+																		? "bg-teal-500/20 text-teal-500 hover:bg-teal-500/30"
+																		: "bg-amber-500/20 text-amber-500 hover:bg-amber-500/30"
+																}`}
+															>
+																<Coins className="w-3 h-3" />
+																{userItem.credits ?? 10}
+															</button>
+														)}
 														<span
 															className={`px-2 py-1 rounded-full text-xs font-medium ${
 																userItem.role === "admin"

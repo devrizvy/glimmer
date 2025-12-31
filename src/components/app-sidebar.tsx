@@ -53,18 +53,18 @@ const navigationItems = [
 ];
 const Tools = [
   {
-    label: "AI Summary",
-    to: "/ai-summary",
-    icon: Sparkles,
-    description: "Wisdom insights",
-    badge: "New",
-  },
-  {
     label: "Notes",
     to: "/notes",
     icon: NotebookPen,
     description: "Personal reflections",
-    badge: "New",
+    badge: "Latest",
+  },
+  {
+    label: "AI Summary",
+    to: "/ai-summary",
+    icon: Sparkles,
+    description: "Wisdom insights",
+    badge: "Beta",
   },
 ];
 const Support = [
@@ -97,14 +97,14 @@ const Support = [
     description: "Common questions",
     badge: null,
   },
-  {
-    label: "Overview",
-    to: "/overview",
-    icon: BarChart3,
-    description: "Platform analytics",
-    badge: null,
-    adminOnly: true,
-  },
+  // {
+  //   label: "Overview",
+  //   to: "/overview",
+  //   icon: BarChart3,
+  //   description: "Platform analytics",
+  //   badge: null,
+  //   adminOnly: true,
+  // },
 ];
 
 export function AppSidebar() {

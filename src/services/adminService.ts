@@ -6,6 +6,7 @@ export type AdminUser = {
 	username: string;
 	role: string;
 	status: string;
+	credits?: number;
 	createdAt: string;
 	updatedAt: string;
 };
@@ -24,6 +25,10 @@ export type UpdateUserStatusRequest = {
 
 export type UpdateUserRoleRequest = {
 	role: "user" | "admin";
+};
+
+export type UpdateUserCreditsRequest = {
+	credits: number;
 };
 
 export type DeleteRoomsRequest = {
@@ -111,6 +116,26 @@ export const adminApi = {
 			return {
 				success: false,
 				error: error.response?.data?.message || "Failed to delete user",
+			};
+		}
+	},
+
+	// Update user credits
+	updateUserCredits: async (
+		email: string,
+		creditsData: UpdateUserCreditsRequest
+	): Promise<{ success: boolean; message?: string; data?: AdminUser; error?: string }> => {
+		try {
+			const response = await api.patch(`/admin/users/${email}/credits`, creditsData);
+			return {
+				success: true,
+				message: response.data.message,
+				data: response.data.data,
+			};
+		} catch (error: any) {
+			return {
+				success: false,
+				error: error.response?.data?.message || "Failed to update user credits",
 			};
 		}
 	},

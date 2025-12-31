@@ -59,7 +59,7 @@ const Welcome = () => {
 				</div>
 
 				{/* Quick Stats */}
-				<div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 animate-in fade-in slide-in-from-bottom-4 duration-700 delay-100">
+				{/* <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 animate-in fade-in slide-in-from-bottom-4 duration-700 delay-100">
 					<Card className="group border-primary/20 bg-gradient-to-br from-primary/10 to-primary/5 hover:border-primary/40 transition-all duration-300 hover:-translate-y-1 hover:shadow-xl hover:shadow-primary/10">
 						<CardContent className="p-6 text-center">
 							<div className="w-12 h-12 rounded-xl bg-primary/20 flex items-center justify-center mx-auto mb-3 group-hover:scale-110 transition-transform duration-300">
@@ -99,7 +99,7 @@ const Welcome = () => {
 							<p className="text-sm text-muted-foreground">Summarize & learn</p>
 						</CardContent>
 					</Card>
-				</div>
+				</div> */}
 
 				{/* Quick Actions */}
 				<Card className="animate-in fade-in slide-in-from-bottom-4 duration-700 delay-200 border-border/50">

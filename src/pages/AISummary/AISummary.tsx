@@ -1,16 +1,10 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { aiApi, type SummaryRequest, type SummaryResponse, type AIServiceStatus } from '@/services/aiService';
+import { useState, useEffect } from 'react';
+import { aiApi, type SummaryRequest, type SummaryResponse, isInsufficientCreditsError } from '@/services/aiService';
+import { useAuth } from '@/contexts/AuthContext';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
 import {
   Tabs,
   TabsContent,
@@ -23,42 +17,40 @@ import {
   Clock,
   Zap,
   AlertCircle,
-  CheckCircle2,
   Loader2,
-  List,
-  AlignLeft,
   Download,
   History,
   Trash2,
   Copy,
   RefreshCw,
-  Upload,
   Brain,
-  Target
+  Target,
+  Coins,
+  Info,
 } from 'lucide-react';
+import toast from 'react-hot-toast';
+
+const MAX_TEXT_LENGTH = 50000;
+const CREDITS_PER_SUMMARY = 3;
 
 interface SummaryHistory {
   id: string;
   originalText: string;
   summary: string;
   timestamp: Date;
-  settings: {
-    length: 'short' | 'medium' | 'long';
-    style: 'concise' | 'bullet';
-  };
+  creditsUsed: number;
+  remainingCredits: number;
   stats: SummaryResponse['stats'];
 }
 
 const AISummary = () => {
+  const { user, updateCredits } = useAuth();
   const [inputText, setInputText] = useState('');
-  const [summaryLength, setSummaryLength] = useState<'short' | 'medium' | 'long'>('medium');
-  const [summaryStyle, setSummaryStyle] = useState<'concise' | 'bullet'>('concise');
   const [currentSummary, setCurrentSummary] = useState<SummaryResponse | null>(null);
   const [isGenerating, setIsGenerating] = useState(false);
-  const [serviceStatus, setServiceStatus] = useState<AIServiceStatus | null>(null);
   const [summaryHistory, setSummaryHistory] = useState<SummaryHistory[]>([]);
   const [activeTab, setActiveTab] = useState('new');
-  const fileInputRef = useRef<HTMLInputElement>(null);
+  const [insufficientCreditsError, setInsufficientCreditsError] = useState<{ required: number; current: number } | null>(null);
 
   // Load data from localStorage on mount
   useEffect(() => {
@@ -74,7 +66,6 @@ const AISummary = () => {
         // Invalid history data, ignore
       }
     }
-    checkServiceStatus();
   }, []);
 
   // Save history to localStorage whenever it changes
@@ -84,51 +75,60 @@ const AISummary = () => {
     }
   }, [summaryHistory]);
 
-  const checkServiceStatus = async () => {
-    try {
-      const status = await aiApi.getServiceStatus();
-      setServiceStatus(status);
-    } catch (error) {
-      setServiceStatus({
-        available: false,
-        service: 'unknown',
-        message: 'Unable to check AI service status'
-      });
-    }
-  };
-
   const handleGenerateSummary = async () => {
     if (!inputText.trim()) return;
 
+    // Check if user has enough credits
+    if ((user?.credits ?? 0) < CREDITS_PER_SUMMARY) {
+      setInsufficientCreditsError({
+        required: CREDITS_PER_SUMMARY,
+        current: user?.credits ?? 0
+      });
+      toast.error(`Insufficient credits. You need ${CREDITS_PER_SUMMARY} credits per request.`);
+      return;
+    }
+
     setIsGenerating(true);
     setCurrentSummary(null);
+    setInsufficientCreditsError(null);
 
     try {
       const request: SummaryRequest = {
         text: inputText.trim(),
-        length: summaryLength,
-        style: summaryStyle,
       };
 
       const response = await aiApi.summarizeText(request);
-      setCurrentSummary(response);
 
-      // Add to history if successful
-      if (response.success) {
+      if (response.success && response.remainingCredits !== undefined) {
+        setCurrentSummary(response);
+        // Update credits in auth context
+        updateCredits(response.remainingCredits);
+        toast.success(`Summary generated! ${response.creditsUsed} credits used.`);
+
+        // Add to history if successful
         const newHistoryItem: SummaryHistory = {
           id: Date.now().toString(),
           originalText: inputText.trim(),
           summary: response.summary,
           timestamp: new Date(),
-          settings: {
-            length: summaryLength,
-            style: summaryStyle,
-          },
+          creditsUsed: response.creditsUsed ?? CREDITS_PER_SUMMARY,
+          remainingCredits: response.remainingCredits,
           stats: response.stats,
         };
         setSummaryHistory(prev => [newHistoryItem, ...prev].slice(0, 20)); // Keep only last 20 items
+      } else {
+        toast.error('Failed to generate summary. Please try again.');
       }
     } catch (error: any) {
+      if (isInsufficientCreditsError(error)) {
+        setInsufficientCreditsError({
+          required: error.required,
+          current: error.current
+        });
+        toast.error(error.message);
+      } else {
+        toast.error('Failed to generate summary. Please try again.');
+      }
       setCurrentSummary({
         success: false,
         summary: '',
@@ -148,11 +148,13 @@ const AISummary = () => {
   const handleCopySummary = () => {
     if (currentSummary?.summary) {
       navigator.clipboard.writeText(currentSummary.summary);
+      toast.success('Summary copied to clipboard!');
     }
   };
 
   const handleCopyHistorySummary = (summary: string) => {
     navigator.clipboard.writeText(summary);
+    toast.success('Summary copied to clipboard!');
   };
 
   const handleDownloadSummary = () => {
@@ -169,18 +171,6 @@ const AISummary = () => {
     URL.revokeObjectURL(url);
   };
 
-  const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0];
-    if (file && file.type === 'text/plain') {
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        const text = e.target?.result as string;
-        setInputText(text);
-      };
-      reader.readAsText(file);
-    }
-  };
-
   const handleDeleteFromHistory = (id: string) => {
     setSummaryHistory(prev => prev.filter(item => item.id !== id));
     if (summaryHistory.length === 1) {
@@ -191,12 +181,11 @@ const AISummary = () => {
   const handleClearAll = () => {
     setInputText('');
     setCurrentSummary(null);
+    setInsufficientCreditsError(null);
   };
 
   const handleReuseSettings = (historyItem: SummaryHistory) => {
     setInputText(historyItem.originalText);
-    setSummaryLength(historyItem.settings.length);
-    setSummaryStyle(historyItem.settings.style);
     setActiveTab('new');
   };
 
@@ -219,6 +208,9 @@ const AISummary = () => {
     }).format(date);
   };
 
+  const credits = user?.credits ?? 10;
+  const canSummarize = inputText.trim().length > 0 && credits >= CREDITS_PER_SUMMARY;
+
   return (
     <div className="container mx-auto px-4 py-8 max-w-7xl">
       {/* Header */}
@@ -237,27 +229,40 @@ const AISummary = () => {
         </p>
       </div>
 
-      {/* Service Status */}
-      {serviceStatus && (
-        <div className={cn(
-          "flex items-center gap-2 px-4 py-3 rounded-lg mb-6 max-w-md mx-auto",
-          serviceStatus.available
-            ? "bg-teal-50 dark:bg-teal-950/20 text-teal-700 dark:text-teal-300 border border-teal-200 dark:border-teal-800"
-            : "bg-red-50 dark:bg-red-950/20 text-red-700 dark:text-red-300 border border-red-200 dark:border-red-800"
-        )}>
-          {serviceStatus.available ? (
-            <>
-              <CheckCircle2 className="w-5 h-5" />
-              <span className="font-medium">AI Service Online • Ready to summarize</span>
-            </>
-          ) : (
-            <>
-              <AlertCircle className="w-5 h-5" />
-              <span className="font-medium">AI Service Offline • Please try again later</span>
-            </>
-          )}
-        </div>
-      )}
+      {/* Credits Display Banner */}
+      <Card className={cn(
+        "mb-6 border-2",
+        credits >= CREDITS_PER_SUMMARY
+          ? "bg-teal-50 dark:bg-teal-950/20 border-teal-200 dark:border-teal-800"
+          : "bg-amber-50 dark:bg-amber-950/20 border-amber-200 dark:border-amber-800"
+      )}>
+        <CardContent className="p-4">
+          <div className="flex items-center justify-center gap-4">
+            <div className="flex items-center gap-2">
+              <Coins className={cn(
+                "w-5 h-5",
+                credits >= CREDITS_PER_SUMMARY ? "text-teal-600 dark:text-teal-400" : "text-amber-600 dark:text-amber-400"
+              )} />
+              <span className="font-semibold text-lg">
+                {credits} Credit{credits !== 1 ? 's' : ''} Available
+              </span>
+            </div>
+            <div className="h-4 w-px bg-gray-300 dark:bg-gray-600"></div>
+            <div className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400">
+              <Info className="w-4 h-4" />
+              <span>{CREDITS_PER_SUMMARY} credits per summarization</span>
+            </div>
+            {credits < CREDITS_PER_SUMMARY && (
+              <>
+                <div className="h-4 w-px bg-gray-300 dark:bg-gray-600"></div>
+                <span className="text-sm font-medium text-amber-700 dark:text-amber-300">
+                  Low credits - Contact admin for more
+                </span>
+              </>
+            )}
+          </div>
+        </CardContent>
+      </Card>
 
       {/* Features Grid */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
@@ -282,10 +287,10 @@ const AISummary = () => {
         <Card className="border-white/10 dark:border-white/5 bg-white/5 dark:bg-white/2 backdrop-blur-sm">
           <CardContent className="p-6 text-center">
             <div className="w-12 h-12 bg-purple-100 dark:bg-purple-900/20 rounded-lg flex items-center justify-center mx-auto mb-4">
-              <Target className="w-6 h-6 text-purple-600 dark:text-purple-400" />
+              <Coins className="w-6 h-6 text-purple-600 dark:text-purple-400" />
             </div>
-            <h3 className="font-semibold mb-2">Customizable</h3>
-            <p className="text-sm text-gray-600 dark:text-gray-400">Choose length and style that fits your needs</p>
+            <h3 className="font-semibold mb-2">Credit-Based</h3>
+            <p className="text-sm text-gray-600 dark:text-gray-400">{CREDITS_PER_SUMMARY} credits per summarization</p>
           </CardContent>
         </Card>
       </div>
@@ -311,7 +316,7 @@ const AISummary = () => {
                 Create New Summary
               </CardTitle>
               <CardDescription>
-                Enter your text below and customize the summary options to get started.
+                Enter your text below to generate an AI-powered summary.
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-6">
@@ -328,22 +333,14 @@ const AISummary = () => {
                     )}
                   </div>
                   <div className="flex items-center gap-2">
-                    <input
-                      ref={fileInputRef}
-                      type="file"
-                      accept=".txt"
-                      onChange={handleFileUpload}
-                      className="hidden"
-                    />
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => fileInputRef.current?.click()}
-                      className="h-8"
-                    >
-                      <Upload className="w-3 h-3 mr-1" />
-                      Upload File
-                    </Button>
+                    <span className={cn(
+                      "text-xs font-medium",
+                      inputText.length > MAX_TEXT_LENGTH * 0.9
+                        ? "text-red-500"
+                        : "text-gray-500 dark:text-gray-400"
+                    )}>
+                      {inputText.length.toLocaleString()} / {MAX_TEXT_LENGTH.toLocaleString()}
+                    </span>
                     {inputText && (
                       <Button
                         variant="outline"
@@ -359,56 +356,39 @@ const AISummary = () => {
                 </div>
                 <Textarea
                   value={inputText}
-                  onChange={(e) => setInputText(e.target.value)}
-                  placeholder="Enter or paste the text you want to summarize... You can also upload a .txt file above."
+                  onChange={(e) => {
+                    const text = e.target.value;
+                    if (text.length <= MAX_TEXT_LENGTH) {
+                      setInputText(text);
+                    }
+                  }}
+                  placeholder="Enter or paste the text you want to summarize... (Max 50,000 characters)"
                   className="min-h-[300px] resize-none bg-white/10 dark:bg-white/5 border-white/20 dark:border-white/10 focus:border-teal-400 dark:focus:border-teal-600 font-mono text-sm"
                 />
               </div>
 
-              {/* Options Section */}
-              <div className="flex items-center gap-6 p-4 bg-white/5 dark:bg-white/2 rounded-lg border border-white/10 dark:border-white/5">
-                <div className="flex items-center gap-2">
-                  <label className="text-sm font-medium">Length:</label>
-                  <Select value={summaryLength} onValueChange={(value: 'short' | 'medium' | 'long') => setSummaryLength(value)}>
-                    <SelectTrigger className="w-40 h-8 bg-white/10 dark:bg-white/5 border-white/20 dark:border-white/10">
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="short">Short (50-100 words)</SelectItem>
-                      <SelectItem value="medium">Medium (100-200 words)</SelectItem>
-                      <SelectItem value="long">Long (200-400 words)</SelectItem>
-                    </SelectContent>
-                  </Select>
+              {/* Insufficient Credits Warning */}
+              {insufficientCreditsError && (
+                <div className="p-4 bg-amber-50 dark:bg-amber-950/20 border border-amber-200 dark:border-amber-800 rounded-lg">
+                  <div className="flex items-start gap-3">
+                    <AlertCircle className="w-5 h-5 text-amber-600 dark:text-amber-400 flex-shrink-0 mt-0.5" />
+                    <div>
+                      <h4 className="font-semibold text-amber-800 dark:text-amber-200">Insufficient Credits</h4>
+                      <p className="text-sm text-amber-700 dark:text-amber-300 mt-1">
+                        You need {insufficientCreditsError.required} credits per request. Your current balance: {insufficientCreditsError.current} credits.
+                      </p>
+                      <p className="text-sm text-amber-700 dark:text-amber-300 mt-2">
+                        Please contact the administrator to purchase more credits.
+                      </p>
+                    </div>
+                  </div>
                 </div>
-
-                <div className="flex items-center gap-2">
-                  <label className="text-sm font-medium">Style:</label>
-                  <Select value={summaryStyle} onValueChange={(value: 'concise' | 'bullet') => setSummaryStyle(value)}>
-                    <SelectTrigger className="w-40 h-8 bg-white/10 dark:bg-white/5 border-white/20 dark:border-white/10">
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="concise">
-                        <div className="flex items-center gap-2">
-                          <AlignLeft className="w-3 h-3" />
-                          Concise Paragraph
-                        </div>
-                      </SelectItem>
-                      <SelectItem value="bullet">
-                        <div className="flex items-center gap-2">
-                          <List className="w-3 h-3" />
-                          Bullet Points
-                        </div>
-                      </SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-              </div>
+              )}
 
               {/* Generate Button */}
               <Button
                 onClick={handleGenerateSummary}
-                disabled={!inputText.trim() || isGenerating || !serviceStatus?.available}
+                disabled={!canSummarize || isGenerating}
                 className="w-full h-12 bg-gradient-to-r from-teal-500 to-teal-600 hover:from-teal-600 hover:to-teal-700 text-white text-lg font-medium disabled:opacity-50 transition-all"
               >
                 {isGenerating ? (
@@ -419,7 +399,7 @@ const AISummary = () => {
                 ) : (
                   <>
                     <Sparkles className="w-5 h-5 mr-2" />
-                    Generate AI Summary
+                    Generate AI Summary ({CREDITS_PER_SUMMARY} credits)
                   </>
                 )}
               </Button>
@@ -433,7 +413,7 @@ const AISummary = () => {
                 <CardTitle className="flex items-center gap-2">
                   <Zap className="w-5 h-5 text-teal-500" />
                   AI Summary Result
-                  {currentSummary.success && (
+                  {currentSummary.success && currentSummary.stats && (
                     <span className="text-xs text-gray-500 dark:text-gray-400 ml-auto">
                       {currentSummary.stats.summaryWords} words • ~{getReadingTime(currentSummary.stats.summaryWords)} min read
                     </span>
@@ -444,34 +424,51 @@ const AISummary = () => {
                 {currentSummary.success ? (
                   <>
                     <div className="prose prose-sm max-w-none text-gray-700 dark:text-gray-300">
-                      {summaryStyle === 'bullet' ? (
-                        <div className="whitespace-pre-line">{currentSummary.summary}</div>
-                      ) : (
-                        <p className="whitespace-pre-line text-base leading-relaxed">{currentSummary.summary}</p>
-                      )}
+                      <p className="whitespace-pre-line text-base leading-relaxed">{currentSummary.summary}</p>
                     </div>
 
+                    {/* Credits Info */}
+                    {currentSummary.creditsUsed !== undefined && currentSummary.remainingCredits !== undefined && (
+                      <div className="flex items-center justify-center gap-4 p-3 bg-teal-50 dark:bg-teal-950/20 rounded-lg border border-teal-200 dark:border-teal-800">
+                        <div className="flex items-center gap-2">
+                          <Coins className="w-4 h-4 text-teal-600 dark:text-teal-400" />
+                          <span className="text-sm font-medium text-teal-700 dark:text-teal-300">
+                            {currentSummary.creditsUsed} credits used
+                          </span>
+                        </div>
+                        <div className="h-4 w-px bg-teal-300 dark:bg-teal-700"></div>
+                        <div className="flex items-center gap-2">
+                          <Coins className="w-4 h-4 text-teal-600 dark:text-teal-400" />
+                          <span className="text-sm font-medium text-teal-700 dark:text-teal-300">
+                            {currentSummary.remainingCredits} credits remaining
+                          </span>
+                        </div>
+                      </div>
+                    )}
+
                     {/* Stats */}
-                    <div className="grid grid-cols-3 gap-4 p-4 bg-white/5 dark:bg-white/2 rounded-lg border border-white/10 dark:border-white/5">
-                      <div className="text-center">
-                        <div className="text-2xl font-bold text-teal-600 dark:text-teal-400">
-                          {currentSummary.stats.originalWords}
+                    {currentSummary.stats && (
+                      <div className="grid grid-cols-3 gap-4 p-4 bg-white/5 dark:bg-white/2 rounded-lg border border-white/10 dark:border-white/5">
+                        <div className="text-center">
+                          <div className="text-2xl font-bold text-teal-600 dark:text-teal-400">
+                            {currentSummary.stats.originalWords}
+                          </div>
+                          <div className="text-xs text-gray-600 dark:text-gray-400">Original Words</div>
                         </div>
-                        <div className="text-xs text-gray-600 dark:text-gray-400">Original Words</div>
-                      </div>
-                      <div className="text-center">
-                        <div className="text-2xl font-bold text-blue-600 dark:text-blue-400">
-                          {currentSummary.stats.summaryWords}
+                        <div className="text-center">
+                          <div className="text-2xl font-bold text-blue-600 dark:text-blue-400">
+                            {currentSummary.stats.summaryWords}
+                          </div>
+                          <div className="text-xs text-gray-600 dark:text-gray-400">Summary Words</div>
                         </div>
-                        <div className="text-xs text-gray-600 dark:text-gray-400">Summary Words</div>
-                      </div>
-                      <div className="text-center">
-                        <div className="text-2xl font-bold text-purple-600 dark:text-purple-400">
-                          {currentSummary.stats.compressionRatio}
+                        <div className="text-center">
+                          <div className="text-2xl font-bold text-purple-600 dark:text-purple-400">
+                            {currentSummary.stats.compressionRatio}
+                          </div>
+                          <div className="text-xs text-gray-600 dark:text-gray-400">Compression</div>
                         </div>
-                        <div className="text-xs text-gray-600 dark:text-gray-400">Compression</div>
                       </div>
-                    </div>
+                    )}
 
                     {/* Actions */}
                     <div className="flex items-center gap-2 pt-4 border-t border-white/10 dark:border-white/5">
@@ -524,15 +521,13 @@ const AISummary = () => {
                 <Card key={item.id} className="border-white/10 dark:border-white/5 bg-white/5 dark:bg-white/2 backdrop-blur-sm">
                   <CardContent className="p-6">
                     <div className="flex items-start justify-between mb-4">
-                      <div className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400">
+                      <div className="flex items-center gap-3 text-sm text-gray-600 dark:text-gray-400">
                         <Clock className="w-4 h-4" />
                         {formatDate(item.timestamp)}
-                        <span className="px-2 py-1 bg-teal-100 dark:bg-teal-900/20 text-teal-700 dark:text-teal-300 rounded-full text-xs">
-                          {item.settings.length}
-                        </span>
-                        <span className="px-2 py-1 bg-blue-100 dark:bg-blue-900/20 text-blue-700 dark:text-blue-300 rounded-full text-xs">
-                          {item.settings.style}
-                        </span>
+                        <div className="flex items-center gap-1 px-2 py-1 bg-teal-100 dark:bg-teal-900/20 text-teal-700 dark:text-teal-300 rounded-full text-xs">
+                          <Coins className="w-3 h-3" />
+                          {item.creditsUsed} used • {item.remainingCredits} left
+                        </div>
                       </div>
                       <div className="flex items-center gap-1">
                         <Button
@@ -567,13 +562,13 @@ const AISummary = () => {
 
                     <div className="space-y-3">
                       <div>
-                        <div className="text-xs text-gray-600 dark:text-gray-400 mb-1">Original ({item.stats.originalWords} words):</div>
+                        <div className="text-xs text-gray-600 dark:text-gray-400 mb-1">Original ({item.stats?.originalWords || 0} words):</div>
                         <div className="text-sm text-gray-700 dark:text-gray-300 bg-white/5 dark:bg-white/2 p-3 rounded border border-white/10 dark:border-white/5 line-clamp-2">
                           {item.originalText}
                         </div>
                       </div>
                       <div>
-                        <div className="text-xs text-gray-600 dark:text-gray-400 mb-1">Summary ({item.stats.summaryWords} words):</div>
+                        <div className="text-xs text-gray-600 dark:text-gray-400 mb-1">Summary ({item.stats?.summaryWords || 0} words):</div>
                         <div className="text-sm text-gray-700 dark:text-gray-300 bg-white/5 dark:bg-white/2 p-3 rounded border border-white/10 dark:border-white/5">
                           {item.summary}
                         </div>

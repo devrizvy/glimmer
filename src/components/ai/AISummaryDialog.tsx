@@ -12,13 +12,6 @@ import {
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
-import {
   Sparkles,
   FileText,
   BarChart3,
@@ -26,8 +19,6 @@ import {
   AlertCircle,
   CheckCircle2,
   Loader2,
-  List,
-  AlignLeft
 } from 'lucide-react';
 
 interface AISummaryDialogProps {
@@ -46,8 +37,6 @@ export const AISummaryDialog: React.FC<AISummaryDialogProps> = ({
   title = 'AI Summarizer'
 }) => {
   const [inputText, setInputText] = useState(initialText);
-  const [summaryLength, setSummaryLength] = useState<'short' | 'medium' | 'long'>('medium');
-  const [summaryStyle, setSummaryStyle] = useState<'concise' | 'bullet'>('concise');
   const [summary, setSummary] = useState<SummaryResponse | null>(null);
   const [isGenerating, setIsGenerating] = useState(false);
   const [serviceStatus, setServiceStatus] = useState<AIServiceStatus | null>(null);
@@ -83,8 +72,6 @@ export const AISummaryDialog: React.FC<AISummaryDialogProps> = ({
     try {
       const request: SummaryRequest = {
         text: inputText.trim(),
-        length: summaryLength,
-        style: summaryStyle,
       };
 
       const response = await aiApi.summarizeText(request);
@@ -186,7 +173,7 @@ export const AISummaryDialog: React.FC<AISummaryDialogProps> = ({
               <div className="flex items-center gap-2 mb-2">
                 <Zap className="w-4 h-4 text-teal-500" />
                 <label className="text-sm font-medium">AI Summary</label>
-                {summary?.success && (
+                {summary?.success && summary.stats && (
                   <span className="text-xs text-gray-500 dark:text-gray-400">
                     {summary.stats.summaryWords} words • ~{getReadingTime(summary.stats.summaryWords)} min read
                   </span>
@@ -206,11 +193,7 @@ export const AISummaryDialog: React.FC<AISummaryDialogProps> = ({
                 ) : summary ? (
                   summary.success ? (
                     <div className="prose prose-sm max-w-none text-gray-700 dark:text-gray-300">
-                      {summaryStyle === 'bullet' ? (
-                        <div className="whitespace-pre-line">{summary.summary}</div>
-                      ) : (
-                        <p className="whitespace-pre-line">{summary.summary}</p>
-                      )}
+                      <p className="whitespace-pre-line">{summary.summary}</p>
                     </div>
                   ) : (
                     <div className="flex flex-col items-center justify-center h-full text-center">
@@ -239,7 +222,7 @@ export const AISummaryDialog: React.FC<AISummaryDialogProps> = ({
           </div>
 
           {/* Stats */}
-          {summary?.success && (
+          {summary?.success && summary.stats && (
             <div className="bg-white/5 dark:bg-white/2 rounded-lg border border-white/10 dark:border-white/5 p-4 mb-4">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
@@ -256,50 +239,6 @@ export const AISummaryDialog: React.FC<AISummaryDialogProps> = ({
               </div>
             </div>
           )}
-
-          {/* Options */}
-          <div className="flex items-center gap-4 mb-4">
-            <div className="flex items-center gap-2">
-              <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                Length:
-              </label>
-              <Select value={summaryLength} onValueChange={(value: 'short' | 'medium' | 'long') => setSummaryLength(value)}>
-                <SelectTrigger className="w-32 h-8 bg-white/10 dark:bg-white/5 border-white/20 dark:border-white/10">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="short">Short (50-100 words)</SelectItem>
-                  <SelectItem value="medium">Medium (100-200 words)</SelectItem>
-                  <SelectItem value="long">Long (200-400 words)</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-
-            <div className="flex items-center gap-2">
-              <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                Style:
-              </label>
-              <Select value={summaryStyle} onValueChange={(value: 'concise' | 'bullet') => setSummaryStyle(value)}>
-                <SelectTrigger className="w-32 h-8 bg-white/10 dark:bg-white/5 border-white/20 dark:border-white/10">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="concise">
-                    <div className="flex items-center gap-2">
-                      <AlignLeft className="w-3 h-3" />
-                      Concise
-                    </div>
-                  </SelectItem>
-                  <SelectItem value="bullet">
-                    <div className="flex items-center gap-2">
-                      <List className="w-3 h-3" />
-                      Bullet Points
-                    </div>
-                  </SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-          </div>
         </div>
 
         {/* Footer */}
